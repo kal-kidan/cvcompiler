@@ -10,28 +10,32 @@ app.post('/user/signup', async (req, res) => {
         body
     );
     try {
-        const savedUser = await newUser.save();
-        const token = await savedUser.getAuthToken(); 
-        res.send({savedUser, token});
+        const data = await newUser.save();
+        const token = await data.getAuthToken(); 
+        res.send({data, token, status:true});
     } catch (error) {
+        console.log(error);
         var errors={errMsg:{}};
         if(error.keyValue){
             if(error.keyValue.email){
-                errors.errMsg.email="this email has been taken"; 
+                delete error.keyValue
+                delete error.driver
+                delete error.name
+                delete error.index
+                delete error.code
+                delete error.keyPattern
+                error.errors = {email: {
+                    properties: {
+                    "message": "this email has been taken",
+                    "type": "taken",
+                    "path": "email"
+                }
+            }}
+                
             }  
         }
-         if(error.errors){
-            if(error.errors.password){
-                errors.errMsg.password="password length should be at least 6";    
-            } 
-            if(error.errors.firstname){
-                errors.errMsg.firstname="please enter valid name";    
-            } 
-            if(error.errors.lastname){
-                errors.errMsg.lastname="please enter valid name";    
-            } 
-        }
-        res.status(400).send(errors);   
+      
+        res.status(400).send(error);   
     }
 
 });
