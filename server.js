@@ -12,9 +12,9 @@ app.post('/user/signup', async (req, res) => {
     try {
         const data = await newUser.save();
         const token = await data.getAuthToken(); 
-        res.send({data, token, status:true});
+        res.send({data, token, status:true, message:"user successfuly signed up"});
     } catch (error) {
-        console.log(error);
+        // console.log(error);
         var errors={errMsg:{}};
         if(error.keyValue){
             if(error.keyValue.email){
