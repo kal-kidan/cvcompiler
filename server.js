@@ -1,7 +1,10 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const { user } = require('./model/user')
+const cors = require('cors');
+
 const app = express();
+app.use(cors());
 var port = process.env.port || 3000 ;
 app.use(express.json());
 app.post('/user/signup', async (req, res) => {
