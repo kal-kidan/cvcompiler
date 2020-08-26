@@ -4,6 +4,7 @@ const cors = require('cors');
 const multer =require('multer')
 const app = express();
 const { user } = require('./model/user')
+const { cv } = require('./model/cv');
 
 app.use(cors());
 var port = process.env.port || 3000 ;
@@ -84,43 +85,60 @@ var storage = multer.diskStorage({
   })
   
   var upload = multer({ storage: storage })
-// const upload = multer({
-//     dest: "cvs",
-//     filename: function (req, file, cb) {
-//         callback(undefined, Date.now() + ".pdf" )
-//     },
-//     limits: {
-//         fileSize: 800000
-//     },
-  
-//     fileFilter(req, file , callback){
-      
-//           if(!file.originalname.endsWith(".pdf")){
-           
-//             return callback(new Error("please upload pdf file"))
-//         } 
 
-//         callback(undefined, true );
-//     }
-// })
 
-app.post('/user/upload/cv', upload.single('cv') , (req, res) => { 
+app.post('/user/upload/cv', upload.single('cv') , async (req, res) => { 
     if(!req.file){
-        res.send({
+        res.status(400).send({
             errors:{
                msg: "please enter a file"
             }
         }) ;  
-        return;  
+    }
+    else{
+        var {userId} = req.body;
+        var {path} = req.file;
+         
+        var newCv = new cv(
+        {path, userId}
+        );
+        try {
+            const data = await newCv.save();
+            if(data){
+                res.send(
+                    {data:{
+                        status:true,
+                        msg: "file uploaded sucessfully",
+                        uploadData: data
+                    }}
+                ) 
+            }
+            
+        } catch (error) {
+            if(error.keyValue){
+                if(error.keyValue.userId){
+                    delete error.keyValue
+                    delete error.driver
+                    delete error.name
+                    delete error.index
+                    delete error.code
+                    delete error.keyPattern
+                    error.errors = {userId: {
+                        properties: {
+                        "message": "the user already uploaded a cv",
+                        "type": "unique",
+                        "path": "userId"
+                    }
+                }}
+                    
+                }  
+            }
+            // console.log("error from the catch block", error)
+        res.status(400).send(error);
+        }
+      
     }
  
-    console.log(req.file);
-    res.send(
-        {data:{
-            status:true,
-            msg: "file uploaded sucessfully",
-        }}
-    ) 
 },
 (error,req, res, next)=>{
    
