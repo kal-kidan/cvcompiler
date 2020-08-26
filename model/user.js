@@ -2,7 +2,7 @@ const {mongoose} = require('../connect');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-
+const {cv} = require('./cv');
 const userSchema = mongoose.Schema(
     {
         firstName: {
@@ -46,6 +46,10 @@ const userSchema = mongoose.Schema(
             required: true,
             minlength: 6,
         },
+        role:{
+            type: String,
+            required: true 
+        },
         tokens: [
             {
                 token: {
@@ -57,6 +61,11 @@ const userSchema = mongoose.Schema(
        
     }
 );
+userSchema.virtual('cvs', {
+    ref: 'cv',
+    localField: '_id',
+    foreignField: 'userId'
+})
 userSchema.methods.getAuthToken = async function (){
     const usere= this 
     const token = jwt.sign({_id: usere._id.toString()}, "mynode"); 

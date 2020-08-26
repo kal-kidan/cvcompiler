@@ -1,9 +1,10 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const { user } = require('./model/user')
 const cors = require('cors');
-
+const multer =require('multer')
 const app = express();
+const { user } = require('./model/user')
+
 app.use(cors());
 var port = process.env.port || 3000 ;
 app.use(express.json());
@@ -62,6 +63,71 @@ app.post('/user/login', async (req, res)=>{
 
 });
 
+var storage = multer.diskStorage({
+    destination: './cvs/',
+    filename: function (req, file, callback) {
+        callback(undefined, Date.now() + ".pdf" ) 
+    }
+    ,
+    limits: {
+        fileSize: 800000
+    },
+    fileFilter(req, file , callback){
+      
+          if(!file.originalname.endsWith(".pdf")){
+           
+            return callback(new Error("please upload pdf file"))
+        } 
+
+        callback(undefined, true )
+    }
+  })
+  
+  var upload = multer({ storage: storage })
+// const upload = multer({
+//     dest: "cvs",
+//     filename: function (req, file, cb) {
+//         callback(undefined, Date.now() + ".pdf" )
+//     },
+//     limits: {
+//         fileSize: 800000
+//     },
+  
+//     fileFilter(req, file , callback){
+      
+//           if(!file.originalname.endsWith(".pdf")){
+           
+//             return callback(new Error("please upload pdf file"))
+//         } 
+
+//         callback(undefined, true );
+//     }
+// })
+
+app.post('/user/upload/cv', upload.single('cv') , (req, res) => { 
+    if(!req.file){
+        res.send({
+            errors:{
+               msg: "please enter a file"
+            }
+        }) ;  
+        return;  
+    }
+ 
+    console.log(req.file);
+    res.send(
+        {data:{
+            status:true,
+            msg: "file uploaded sucessfully",
+        }}
+    ) 
+},
+(error,req, res, next)=>{
+   
+   res.status(400).send({errors:{
+       msg:error.message
+   }})
+});
 
 app.listen(3000, () => {
     console.log("the server started ...")
