@@ -55,11 +55,11 @@ app.post('/user/login', async (req, res)=>{
         }
         else{
             errors.errMsg=users;
-            res.status(400).send(errors);
+            res.status(400).send({errors});
         }
    
     } catch (error) { 
-          res.status(500).send(error);
+          res.status(500).send({error});
     }    
 
 });
@@ -146,6 +146,72 @@ app.post('/user/upload/cv', [auth, upload.single('cv')] , async (req, res) => {
        msg:error.message
    }})
 });
+
+app.get('/user/cv', auth, async (req, res)=>{
+   const {_id} = req.user;
+   const userCv = await cv.find({userId:_id});
+   if(!userCv){
+      res.status(404).send("cv not found");
+      return;
+   }
+    res.send({userCv})
+})
+
+app.patch('/user/update', auth, async (req, res)=>{
+    var ObjectId = mongoose.Types.ObjectId; 
+    const userPassed = req.body;
+      if(!user){
+        res.status(400).send({errors:{
+            errMsg: "please enter data to be updated"
+        }});  
+        return;
+      } 
+      const userToBeUpdate = req.user;
+       
+        let userReturned = '';
+        try {
+            if(userPassed.firstName){
+                 await userToBeUpdate.updateOne(     
+                     {
+                        firstName : userPassed.firstName
+                     } 
+                    )  
+            }
+    
+            if(userPassed.lastName){
+                await userToBeUpdate.updateOne(     
+                    {
+                        lastName : userPassed.lastName
+                    }
+                   )      
+            }
+    
+            if(userPassed.phoneNumber){
+                await userToBeUpdate.updateOne(     
+                    {
+                        phoneNumber : userPassed.phoneNumber
+                    }
+                   ) 
+            }
+            if(userPassed.password){
+                await userToBeUpdate.updateOne(     
+                    {
+                        password : userPassed.password
+                    }
+                   ) 
+            }
+            res.send({
+                status: true,
+                message: "you updated successfuly",
+                updatedData: await user.findById(userToBeUpdate._id)
+            })
+        } catch (error) {
+            console.log(error);
+            res.status(400).send({error});
+        }
+     
+     
+ })
 
 app.listen(3000, () => {
     console.log("the server started ...")
