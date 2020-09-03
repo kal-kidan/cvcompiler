@@ -205,13 +205,55 @@ app.patch('/user/update', auth, async (req, res)=>{
                 message: "you updated successfuly",
                 updatedData: await user.findById(userToBeUpdate._id)
             })
-        } catch (error) {
-            console.log(error);
-            res.status(400).send({error});
+        } catch (errors) { 
+            res.status(400).send({errors});
         }
      
      
  })
+
+ app.get('/admins', (req, res)=>{
+    const superAdmin = req.user;
+    if(superAdmin.role = "superAdmin"){
+        try { 
+            const admins = await user.find({role: "admin"})
+            res.send({admins})
+        } catch (error) {
+            res.status(400).send({errors})
+        }
+       
+    }
+    else{
+        res.status(400).send({error:{
+            errMsg: "you can't access this route"
+        }})
+    }
+      
+ })
+
+ app.delete('/admin' , (req, res)=>{
+    const superAdmin = req.user;
+    if(superAdmin.role = "superAdmin"){
+        try {
+            const {adminId} = req.bod
+            const admin = await user.delete({_id: adminId});
+            res.send({
+                status: true,
+                data: admin,
+                message: "the admin successfuly deleted"
+            })  
+        } catch (errors) {
+            res.status(400).send({errors})
+        }
+       
+    }
+    else{
+        res.status(400).send({error:{
+            errMsg: "you can't access this route"
+        }})
+    }
+  
+})
 
 app.listen(3000, () => {
     console.log("the server started ...")
