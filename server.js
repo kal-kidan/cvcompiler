@@ -5,7 +5,7 @@ const multer =require('multer')
 const app = express();
 const { user } = require('./model/user')
 const { cv } = require('./model/cv');
-
+const auth = require('./middleware/auth')
 app.use(cors());
 var port = process.env.port || 3000 ;
 app.use(express.json());
@@ -87,7 +87,7 @@ var storage = multer.diskStorage({
   var upload = multer({ storage: storage })
 
 
-app.post('/user/upload/cv', upload.single('cv') , async (req, res) => { 
+app.post('/user/upload/cv', [auth, upload.single('cv')] , async (req, res) => { 
     if(!req.file){
         res.status(400).send({
             errors:{
@@ -96,7 +96,7 @@ app.post('/user/upload/cv', upload.single('cv') , async (req, res) => {
         }) ;  
     }
     else{
-        var {userId} = req.body;
+        var userId = req.user._id;
         var {path} = req.file;
          
         var newCv = new cv(
