@@ -212,7 +212,7 @@ app.patch('/user/update', auth, async (req, res)=>{
      
  })
 
- app.get('/admins', (req, res)=>{
+ app.get('/admins', auth, async (req, res)=>{
     const superAdmin = req.user;
     if(superAdmin.role = "superAdmin"){
         try { 
@@ -231,18 +231,20 @@ app.patch('/user/update', auth, async (req, res)=>{
       
  })
 
- app.delete('/admin' , (req, res)=>{
+ app.delete('/admin' , auth, async (req, res)=>{
     const superAdmin = req.user;
     if(superAdmin.role = "superAdmin"){
         try {
-            const {adminId} = req.bod
-            const admin = await user.delete({_id: adminId});
+            const {adminId} = req.body
+            console.log(adminId)
+            const admin = await user.deleteOne({_id: adminId});
             res.send({
                 status: true,
                 data: admin,
                 message: "the admin successfuly deleted"
             })  
         } catch (errors) {
+            console.log(errors)
             res.status(400).send({errors})
         }
        
