@@ -14,12 +14,12 @@ const uploadCv = async (req, res) => {
     destination: function (req, file, cb) {
       cb(null, "uploads/cvs");
     },
-
-    filename: helper.renameFile,
+    filename: helper.renameFile 
   });
   const upload = multer({
     storage: storage,
-    fileFilter: helper.validateExtension,
+    limits: { fileSize: 1024*1024*3 },
+    fileFilter: helper.validateExtension 
   }).single("cv");
 
   upload(req, res, function(err) {
@@ -38,20 +38,28 @@ function validateAndUploadFile(req,res,err){
             }
         });
     }
-    else if (!req.file) {
-        return res.status(400).send({
-            errors:{
-                msg:'please enter file'
-            }
-        });
-        
-    }
+
     else if (err instanceof multer.MulterError) {
+      if(err.code == "LIMIT_FILE_SIZE"){
+        return res.status(400).send(
+          {
+            errors:{errMsg: "the file is too large"}
+          }
+        );
+      }
         return res.status(500).send(err);
     }
     else if (err) {
         return res.status(500).send(err);
     }
+    else if (!req.file) {
+      return res.status(400).send({
+          errors:{
+              msg:'please enter file'
+          }
+      });
+      
+  }
     else{
         saveCv(req,res)
     }
@@ -74,24 +82,31 @@ async function saveCv(req, res) {
       });
     }
   } catch (error) {
-    if (error.keyValue) {
-      if (error.keyValue.userId) {
-        delete error.keyValue;  delete error.driver; delete error.name; delete error.index; delete error.code; delete error.keyPattern;
-        error.errors = {
-          userId: {
-            properties: {
-              message: "the user already uploaded a cv",
-              type: "unique",
-              path: "userId",
-            },
-          },
-        };
-      }
-    }
-    
-    res.status(400).send(error);
+   
+    sendError(error, res);
+   
   }
 }
+
+
+function sendError(error, res){
+  if (error.keyValue) {
+    if (error.keyValue.userId) {
+      delete error.keyValue;  delete error.driver; delete error.name; delete error.index; delete error.code; delete error.keyPattern;
+      error.errors = {
+        userId: {
+          properties: {
+            message: "the user already uploaded a cv",
+            type: "unique",
+            path: "userId",
+          },
+        },
+      };
+    }
+  }
+  res.status(400).send(error);
+}
+
 
 const getCv = async (req, res) => {
   const { _id } = req.user;  
