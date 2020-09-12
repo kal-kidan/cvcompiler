@@ -50,6 +50,9 @@ const userSchema = mongoose.Schema(
             type: String,
             required: true 
         },
+        assignedCv:{
+            type: Number
+        },
         tokens: [
             {
                 token: {
@@ -59,7 +62,7 @@ const userSchema = mongoose.Schema(
             }
         ],
        
-    }
+    } 
 );
 userSchema.virtual('cvs', {
     ref: 'cv',

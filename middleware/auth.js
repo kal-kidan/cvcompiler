@@ -14,11 +14,10 @@ const auth = async (req, res, next) => {
 
         req.user = usere;
         req.token = token;
-   
         next();
-    } catch (error) {
-        error.errMsg = "you are not authorized"
-        res.status(401).send({error})
+    } catch (errors) {
+        errors.errMsg = "you are not authorized"
+        res.status(401).send({errors})
     
     }
    
