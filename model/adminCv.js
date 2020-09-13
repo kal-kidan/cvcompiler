@@ -7,20 +7,14 @@ const adminCvSchema = mongoose.Schema(
          
         adminId: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'user',
-            unique: true,
+            // ref: 'user', 
             required: true
         },
-        cvIds: 
-           [  
-            {
-              cvId: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'cv',
-                unique: true,
-                required: true
-              }
-            }]
+        cvId: {
+          type: mongoose.Schema.Types.ObjectId,
+        //   ref: 'cv', 
+          required: true
+        }
         
     },
     

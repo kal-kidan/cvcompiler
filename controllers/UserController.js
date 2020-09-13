@@ -71,21 +71,54 @@ async function saveCv(req, res) {
 
   var newCv = new cv({ path, userId });
   try {
-    const data = await newCv.save();
+    const data = await newCv.save(); 
     if (data) {
-      res.send({
-        data: {
-          status: true,
-          msg: "file uploaded sucessfully",
-          uploadData: data,
-        },
-      });
-    }
-  } catch (error) {
+      const bool = await assignCv(req,res, data._id) 
+      if(bool){
+        res.send({
+          data: {
+            status: true,
+            msg: "file uploaded sucessfully",
+            uploadData: data,
+          },
+        });
+        return;
+      }
+      res.status(500).send({error:{errMsg: "can not add the cv"}})
    
+    }
+  } catch (error) { 
     sendError(error, res);
    
   }
+}
+
+async function assignCv(req,res, cvId){
+  
+    let admin = await user.find({role: "admin"}, null, { 
+      skip:0, 
+      limit:1, 
+        sort:{
+      assignedCv: 1
+    } 
+  })
+
+  admin = admin[0] 
+
+    const newAdmin = new adminCv({
+        adminId: admin._id,
+        cvId: cvId
+    }) 
+   const addedAdmin = await newAdmin.save()
+   const updatedAdmin = await user.findOneAndUpdate({ _id: admin._id}, { $inc: { assignedCv: 1 } }, {new: true } )
+    if( !(addedAdmin || updatedAdmin) ){
+      return false
+    }
+
+    return true
+   
+ 
+  
 }
 
 
