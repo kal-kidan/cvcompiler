@@ -23,14 +23,17 @@ const register = async (req, res) => {
         if(error.keyValue){
             if(error.keyValue.email){   
                 let emailError  = {}
-                let errorArray = []
+                let errorArray = {errors:[]}
                 emailError.msg = 'this email has been taken'
                 emailError.param = 'email'
                 emailError.value = req.body.email
                 emailError.location = 'body'
-                errorArray.push(emailError)
+                errorArray.errors.push(emailError)
                 res.status(400).send(errorArray); 
             }
+        }
+        else{
+            res.status(500).send(error)
         }
                 
              

@@ -1,10 +1,13 @@
 
 const multer =require('multer')
+const { validationResult, check } = require('express-validator');
+const { ObjectId } = require('mongoose');
+
 const { user } = require('../model/user')
 const { cv } = require('../model/cv')
 const { adminCv } = require('../model/adminCv')
 const {mongoose} = require("./../connect");
-const { ObjectId } = require('mongoose');
+
 const url = require('url');
 
 const getAdmin = async (req, res)=>{
@@ -75,6 +78,11 @@ const deleteAdmin = async (req, res)=>{
 }
 
 const registerAdmin = async (req, res)=>{
+    const errors = validationResult(req)
+    if(!errors.isEmpty()){
+        res.status(400).send(errors)
+        return
+    }
     const superAdmin = req.user;
     if(superAdmin.role === "superAdmin"){
         try {
@@ -98,22 +106,25 @@ const registerAdmin = async (req, res)=>{
                 message: "admin registered successfuly"
             })
         } catch (error) {
-            var errors={errMsg:{}};
+            
             if(error.keyValue){
                 if(error.keyValue.email){
-                    delete error.keyValue ;delete error.driver ;delete error.name ;delete error.index;delete error.code;delete error.keyPattern
-                    error.errors = {email: {
-                        properties: {
-                        "message": "this email has been taken",
-                        "type": "taken",
-                        "path": "email"
-                    }
-                }}
-                    
+                    let emailError  = {}
+                    let errorArray = {errors:[]}
+                    emailError.msg = 'this email has been taken'
+                    emailError.param = 'email'
+                    emailError.value = req.body.email
+                    emailError.location = 'body'
+                    errorArray.errors.push(emailError)
+                    res.status(400).send(errorArray); 
                 }  
             }
+
+            else{
+                res.status(500).send(error)
+            }
           
-            res.status(400).send(error); 
+            
         }
        
     }
