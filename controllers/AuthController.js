@@ -2,34 +2,42 @@ const { user } = require('./../model/user')
 const { cv } = require('./../model/cv')
 const { adminCv } = require('./../model/adminCv')
 const mongoose = require("./../connect");
+const { validationResult, check } = require('express-validator');
 
 const register = async (req, res) => {
+    const errors = validationResult(req)
+    if(!errors.isEmpty()){
+        res.status(400).send(errors)
+        return
+    }
     var body = req.body;
     var newUser = new user(
         body
     );
+
     try {
         const data = await newUser.save();
         const token = await data.getAuthToken(); 
         res.send({data, token, status:true, message:"user successfuly signed up"});
-    } catch (error) { 
-        var errors={errMsg:{}};
+    } catch (error) {    
         if(error.keyValue){
-            if(error.keyValue.email){
-                delete error.keyValue ;delete error.driver ;delete error.name ;delete error.index;delete error.code;delete error.keyPattern
-                error.errors = {email: {
-                    properties: {
-                    "message": "this email has been taken",
-                    "type": "taken",
-                    "path": "email"
-                }
-            }}
+            if(error.keyValue.email){   
+                let emailError  = {}
+                let errorArray = []
+                emailError.msg = 'this email has been taken'
+                emailError.param = 'email'
+                emailError.value = req.body.email
+                emailError.location = 'body'
+                errorArray.push(emailError)
+                res.status(400).send(errorArray); 
+            }
+        }
                 
-            }  
+             
         }
       
-        res.status(400).send(error);   
-    }
+         
+    
 
 }
 const login = async (req, res)=>{ 
