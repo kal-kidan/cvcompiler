@@ -18,7 +18,7 @@ const register = async (req, res) => {
     try {
         const data = await newUser.save();
         const token = await data.getAuthToken(); 
-        res.send({data, token, status:true, message:"user successfuly signed up"});
+        res.send({data, token, status:true, msg:"user successfuly signed up"});
     } catch (error) {    
         if(error.keyValue){
             if(error.keyValue.email){   

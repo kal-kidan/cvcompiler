@@ -43,7 +43,7 @@ function validateAndUploadFile(req,res,err){
       if(err.code == "LIMIT_FILE_SIZE"){
         return res.status(400).send(
           {
-            errors:{errMsg: "the file is too large"}
+            errors:{msg: "the file is too large"}
           }
         );
       }
@@ -84,14 +84,28 @@ async function saveCv(req, res) {
         });
         return;
       }
-      res.status(500).send({error:{errMsg: "can not add the cv"}})
+      res.status(500).send({error:{msg: "can not add the cv"}})
    
     }
   } catch (error) { 
-    sendError(error, res);
+    if (error.keyValue) {
+      if (error.keyValue.userId) {
+        let uploadError  = {} 
+        uploadError.msg = 'you already uploaded a cv'
+        uploadError.param = 'userId'
+        uploadError.value = req.user._id
+        uploadError.location = 'body' 
+        res.status(400).send({errors: uploadError}); 
+      }
+      else{
+        res.status(500).send(error)
+      }
+    }
    
   }
 }
+
+ 
 
 async function assignCv(req,res, cvId){
   
@@ -122,23 +136,7 @@ async function assignCv(req,res, cvId){
 }
 
 
-function sendError(error, res){
-  if (error.keyValue) {
-    if (error.keyValue.userId) {
-      delete error.keyValue;  delete error.driver; delete error.name; delete error.index; delete error.code; delete error.keyPattern;
-      error.errors = {
-        userId: {
-          properties: {
-            message: "the user already uploaded a cv",
-            type: "unique",
-            path: "userId",
-          },
-        },
-      };
-    }
-  }
-  res.status(400).send(error);
-}
+
 
 
 const getCv = async (req, res) => {
@@ -169,7 +167,7 @@ const updateUser = async (req, res) => {
   if (!user) {
     res.status(400).send({
       errors: {
-        errMsg: "please enter data to be updated",
+        msg: "please enter data to be updated",
       },
     });
     return;
@@ -190,7 +188,7 @@ const updateUser = async (req, res) => {
         res.send({
           data: result,
           status: true,
-          message: "user updated sucessfuly"
+          msg: "user updated sucessfuly"
         })
        }
      }

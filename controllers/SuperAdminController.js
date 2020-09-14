@@ -20,7 +20,7 @@ const getAdmin = async (req, res)=>{
            res.status(400).send(
                {
                    "errors":{
-                       "errMsg": "invalid input"
+                       "msg": "invalid input"
                    }
                }
            )
@@ -36,7 +36,7 @@ const getAdmin = async (req, res)=>{
     }
     else{
         res.status(400).send({errors:{
-            errMsg: "only super admin is privilleged to access this route"
+            msg: "only super admin is privilleged to access this route"
         }})
     }
       
@@ -52,26 +52,26 @@ const deleteAdmin = async (req, res)=>{
             if(numberOfDeletedAdmins===1){
                 res.send({ 
                     status: true, 
-                    message: "the admin successfuly deleted"
+                    msg: "the admin successfuly deleted"
                 })  
             }
             else{
                 res.status(404).send({
                     status: false, 
-                    errMsg: "the admin id is not found"
+                    msg: "the admin id is not found"
                 }) 
             }
           
         } catch (error) {
             const errors = {}
-            errors.errMsg = "invalid admin id"
+            errors.msg = "invalid admin id"
             res.status(400).send({errors})
         }
        
     }
     else{
         res.status(400).send({errors:{
-            errMsg: "only super admin is privilleged to access this route"
+            msg: "only super admin is privilleged to access this route"
         }})
     }
   
@@ -103,7 +103,7 @@ const registerAdmin = async (req, res)=>{
             res.send({
                 data: admin,
                 status: true,
-                message: "admin registered successfuly"
+                msg: "admin registered successfuly"
             })
         } catch (error) {
             
@@ -130,7 +130,7 @@ const registerAdmin = async (req, res)=>{
     }
     else{
         res.status(400).send({error:{
-            errMsg: "only super admin is privilleged to access this route"
+            msg: "only super admin is privilleged to access this route"
         }})
     }
 }
