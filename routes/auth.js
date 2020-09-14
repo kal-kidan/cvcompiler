@@ -8,7 +8,8 @@ router.post('/signup', [
     check('lastName').isAlpha().withMessage("enter valid name"),
     check('email').isEmail().withMessage("enter valid email"),
     check('phoneNumber').not().isEmpty().withMessage("enter valid phone number"),
-    check('password').isLength({min: 6}).withMessage("enter valid phone number")
+    check('password').isLength({min: 6}).withMessage("enter valid phone number"),
+    check('role').isAlpha().withMessage("enter valid role"),
 ],authController.register)
 router.post('/login', authController.login)
 module.exports = router
