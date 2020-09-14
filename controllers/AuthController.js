@@ -43,18 +43,20 @@ const register = async (req, res) => {
 const login = async (req, res)=>{ 
     try {
         const users = await user.findByCredentials(req.body.email, req.body.password);
-        let errors={errMsg:''}
+        let errors={msg:''}
         if(users._id){
+            let status = true
             const token = await users.getAuthToken();  
-            res.send({users, token});
+            res.send({users, token, status});
         }
         else{
-            errors.errMsg=users;
-            res.status(400).send({errors});
+            let status = false
+            errors.msg=users;
+            res.status(400).send({errors, status});
         }
    
-    } catch (error) { 
-          res.status(500).send({error});
+    } catch (errors) { 
+          res.status(500).send({errors});
     }    
 
 }
