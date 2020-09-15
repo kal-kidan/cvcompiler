@@ -8,7 +8,7 @@ const cvSchema = mongoose.Schema(
         },
         userId: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'user',
+            ref: 'users',
             unique: true,
             required: true
         }

@@ -102,13 +102,13 @@ userSchema.methods.getAuthToken = async function (){
 
 userSchema.pre('save', async function(next){ 
     const usere = this
-
     if(usere.isModified('password')){ 
         usere.password = await bcrypt.hash(usere.password, 8)
     }
-      
     next()
 })
+
+ 
 
 const user = mongoose.model('user',userSchema);
 

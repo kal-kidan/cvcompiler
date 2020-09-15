@@ -5,6 +5,7 @@ const auth = require('./../middleware/auth')
 const multer =require('multer')
 const path = require('path')
 const helper = require('./../controllers/helper')
+const {hashPassword} = require('./../middleware/hash_password')
 
 router.post('/upload/cv', auth, userController.uploadCv)
 router.get('/cv',auth, userController.getCv)

@@ -7,12 +7,12 @@ const adminCvSchema = mongoose.Schema(
          
         adminId: {
             type: mongoose.Schema.Types.ObjectId,
-            // ref: 'user', 
+            // ref: 'users', 
             required: true
         },
         cvId: {
           type: mongoose.Schema.Types.ObjectId,
-        //   ref: 'cv', 
+        //   ref: 'cvs', 
           required: true
         }
         

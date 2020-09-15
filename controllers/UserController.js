@@ -1,7 +1,7 @@
 const multer = require("multer");
 const path = require("path");
 const  fs  = require("fs");
-
+const bcrypt = require('bcryptjs');
 const { user } = require("./../model/user");
 const { cv } = require("./../model/cv");
 const { adminCv } = require("./../model/adminCv");
@@ -163,8 +163,8 @@ const getCv = async (req, res) => {
 };
 
 const updateUser = async (req, res) => { 
-  const userPassed = req.body;
-  if (!user) {
+  let userPassed = {}
+  if (!req.body) {
     res.status(400).send({
       errors: {
         msg: "please enter data to be updated",
@@ -172,17 +172,31 @@ const updateUser = async (req, res) => {
     });
     return;
   }
-  const userToBeUpdate = req.user;
-  const {_id} = userToBeUpdate;
+ 
+  if(req.body.password){
+    userPassed.password = req.body.password;
+  }
+
+  const {_id} = req.user;
+  if(userPassed.password){
+    try {
+      userPassed.password = await bcrypt.hash(userPassed.password, 8) 
+    } catch (error) {
+      res.send(error)
+    }
+   
+}
 
   let userReturned = "";
   user.findOneAndUpdate(
      {_id},
      userPassed,
-     {new: true, runValidators: true, useFindAndModify:false },
+     {new: true, runValidators: true, useFindAndModify:false } ,
      function(err, result){
        if(err){
-          res.send(err)
+         console.log(err)
+          res.status(500).send(err)
+          
        }
        else{
         res.send({
