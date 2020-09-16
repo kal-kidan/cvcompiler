@@ -29,7 +29,7 @@ const getAdmin = async (req, res)=>{
         try { 
             const admins = await user.find({role: "admin"}, null, { skip: skip, limit: limit})
             const pageNumber = parseInt (skip/limit) + 1;
-            const pages = Math.floor(admins.length/limit)
+            const pages = Math.ceil(admins.length/limit)
             const page = {pageNumber, pages}
             res.send({admins, page})
         } catch (errors) {
