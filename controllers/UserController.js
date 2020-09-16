@@ -6,8 +6,7 @@ const { user } = require("./../model/user");
 const { cv } = require("./../model/cv");
 const { adminCv } = require("./../model/adminCv");
 const {mongoose} = require("./../connect");
-const helper = require("./helper");
-
+const helper = require("./helper")
 
 const uploadCv = async (req, res) => {
   const storage = multer.diskStorage({
@@ -105,8 +104,6 @@ async function saveCv(req, res) {
   }
 }
 
- 
-
 async function assignCv(req,res, cvId){
   
     let admin = await user.find({role: "admin"}, null, { 
@@ -130,14 +127,8 @@ async function assignCv(req,res, cvId){
     }
 
     return true
-   
- 
   
 }
-
-
-
-
 
 const getCv = async (req, res) => {
   const { _id } = req.user;  

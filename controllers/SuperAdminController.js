@@ -1,12 +1,12 @@
 
 const multer =require('multer')
 const { validationResult, check } = require('express-validator');
-const { ObjectId } = require('mongoose');
+// const { ObjectId } = require('mongoose');
 
 const { user } = require('../model/user')
 const { cv } = require('../model/cv')
 const { adminCv } = require('../model/adminCv')
-const {mongoose} = require("./../connect");
+// const {mongoose} = require("./../connect");
 
 const url = require('url');
 
