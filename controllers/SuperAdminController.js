@@ -16,7 +16,7 @@ const getAdmin = async (req, res)=>{
         const limit = parseInt(req.query.limit)  
         const skip = parseInt(req.query.skip)
          
-        if( !(limit >= 0 && skip >= 0) ) {  
+        if( !(limit > 0 && skip >= 0) ) {  
            res.status(400).send(
                {
                    "errors":{
@@ -28,7 +28,10 @@ const getAdmin = async (req, res)=>{
         }
         try { 
             const admins = await user.find({role: "admin"}, null, { skip: skip, limit: limit})
-            res.send({admins})
+            const pageNumber = parseInt (skip/limit) + 1;
+            const pages = Math.floor(admins.length/limit)
+            const page = {pageNumber, pages}
+            res.send({admins, page})
         } catch (errors) {
             res.status(500).send({errors})
         }
