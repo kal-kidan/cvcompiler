@@ -27,9 +27,10 @@ const getAdmin = async (req, res)=>{
            return
         }
         try { 
+            const numberOfAdmins = await user.countDocuments({role: "admin"}) 
             const admins = await user.find({role: "admin"}, null, { skip: skip, limit: limit})
             const pageNumber = parseInt (skip/limit) + 1;
-            const pages = Math.ceil(admins.length/limit)
+            const pages = Math.ceil(numberOfAdmins/limit) 
             const page = {pageNumber, pages}
             res.send({admins, page})
         } catch (errors) {
