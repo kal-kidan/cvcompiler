@@ -3,11 +3,12 @@ const { cv } = require('../model/cv')
 const { adminCv } = require('../model/adminCv')
 
 const getCv = async (req, res)=>{
-    const admin = req.user
-    const adminId = admin._id 
+    let admin = req.user
+    let adminId = admin._id 
+    let {status} = req.params
   
     try {
-        const cvsAssigned = await adminCv.find({})
+        const cvsAssigned = await adminCv.find({status})
         const listOfAssignedCvs = []
         for(let adminCv of cvsAssigned){
             let {cvId} = adminCv
@@ -25,8 +26,9 @@ const getCv = async (req, res)=>{
         console.log(error)
         res.send(error)
     }
-   
 }
+
+ 
 
 module.exports = {
     getCv

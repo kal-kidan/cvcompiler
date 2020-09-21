@@ -14,6 +14,11 @@ const adminCvSchema = mongoose.Schema(
           type: mongoose.Schema.Types.ObjectId,
         //   ref: 'cvs', 
           required: true
+        },
+
+        status:{
+          type: String,
+          default: 'new'
         }
         
     },
