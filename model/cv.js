@@ -11,12 +11,32 @@ const cvSchema = mongoose.Schema(
             ref: 'users',
             unique: true,
             required: true
-        }
-    },
+        },
+        adminId:{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'users' 
+        },
+        status:{
+            type: String,
+            default: 'new'
+          },
     
+        recommendation:[
+            {
+                name:{
+                   type: String,  
+                 },
+                 description:{
+                   type: String, 
+                 }
+            }
+           ],
+    } ,
     {
         timestamps: true
     }
+    
+    
 )
 const cv = mongoose.model('cv',cvSchema);
 

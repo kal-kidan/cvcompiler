@@ -4,7 +4,6 @@ const { validationResult, check } = require('express-validator');
 
 const { user } = require('../model/user')
 const { cv } = require('../model/cv')
-const { adminCv } = require('../model/adminCv')
 const {section} = require('./../model/section')
 
 const url = require('url');

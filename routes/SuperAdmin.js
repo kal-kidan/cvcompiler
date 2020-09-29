@@ -21,5 +21,6 @@ check('category').isAlpha().withMessage("enter valid category"),
 
 router.delete('/section/:_id', auth, superAdminController.deleteSection)
 router.get('/sections', auth, superAdminController.getSections)
+router.get('/addsection', auth, superAdminController.addSection)
 
 module.exports = router

@@ -6,8 +6,7 @@ const app = express();
 
 //models
 const { user } = require('./model/user')
-const { cv } = require('./model/cv');
-const { adminCv } = require('./model/adminCv');
+const { cv } = require('./model/cv'); 
 
 //routes
 const authRoute = require('./routes/auth')

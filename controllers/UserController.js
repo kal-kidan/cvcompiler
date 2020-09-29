@@ -4,7 +4,6 @@ const  fs  = require("fs");
 const bcrypt = require('bcryptjs');
 const { user } = require("./../model/user");
 const { cv } = require("./../model/cv");
-const { adminCv } = require("./../model/adminCv");
 const {mongoose} = require("./../connect");
 const helper = require("./helper")
 
@@ -22,8 +21,7 @@ const uploadCv = async (req, res) => {
   }).single("cv");
 
   upload(req, res, function(err) {
-  validateAndUploadFile(req,res,err);
-    
+   validateAndUploadFile(req,res,err);  
 });
   
 };
@@ -67,12 +65,24 @@ function validateAndUploadFile(req,res,err){
 async function saveCv(req, res) {
   var userId = req.user._id;
   var { path } = req.file;
+  let admin = await user.find({role: "admin"}, null, { 
+    skip:0, 
+    limit:1, 
+      sort:{
+    assignedCv: 1
+  } 
+})
 
-  var newCv = new cv({ path, userId });
+admin = admin[0] 
+const adminId = admin._id
+
+
+  var newCv = new cv({ path, userId, adminId });
   try {
     const data = await newCv.save(); 
     if (data) {
-      const bool = await assignCv(req,res, data._id) 
+      console.log(adminId)
+      const bool = await assignCv(req,res, adminId) 
       if(bool){
         res.send({
           data: {
@@ -104,25 +114,10 @@ async function saveCv(req, res) {
   }
 }
 
-async function assignCv(req,res, cvId){
+async function assignCv(req,res, adminId){
   
-    let admin = await user.find({role: "admin"}, null, { 
-      skip:0, 
-      limit:1, 
-        sort:{
-      assignedCv: 1
-    } 
-  })
-
-  admin = admin[0] 
-
-    const newAdmin = new adminCv({
-        adminId: admin._id,
-        cvId: cvId
-    }) 
-   const addedAdmin = await newAdmin.save()
-   const updatedAdmin = await user.findOneAndUpdate({ _id: admin._id}, { $inc: { assignedCv: 1 } }, {new: true } )
-    if( !(addedAdmin || updatedAdmin) ){
+   const updatedAdmin = await user.findOneAndUpdate({ _id: adminId}, { $inc: { assignedCv: 1 } }, {new: true } )
+    if( !updatedAdmin ){
       return false
     }
 
@@ -152,6 +147,20 @@ const getCv = async (req, res) => {
   })
 
 };
+
+const getSection = async (req, res)=>{
+  try {
+    let {_id} = req.user
+    let Cv = await cv.find({_id})
+    let {section} = Cv
+    res.send(section)
+  } catch (error) {
+    res.status(500).send({
+      error: true,
+      msg: error.message
+    })
+  }
+}
 
 const updateUser = async (req, res) => { 
   let userPassed = {}
@@ -208,4 +217,5 @@ module.exports = {
   uploadCv,
   updateUser,
   getCv,
+  getSection
 };

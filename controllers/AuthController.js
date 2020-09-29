@@ -1,6 +1,5 @@
 const { user } = require('./../model/user')
-const { cv } = require('./../model/cv')
-const { adminCv } = require('./../model/adminCv')
+const { cv } = require('./../model/cv') 
 const mongoose = require("./../connect");
 const { validationResult, check } = require('express-validator');
 

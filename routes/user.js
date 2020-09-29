@@ -10,5 +10,5 @@ const {hashPassword} = require('./../middleware/hash_password')
 router.post('/upload/cv', auth, userController.uploadCv)
 router.get('/cv',auth, userController.getCv)
 router.patch('/update', auth, userController.updateUser)
-
+router.get('/section', auth, userController.getSection)
 module.exports = router
