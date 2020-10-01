@@ -1,5 +1,6 @@
 const { user } = require('../model/user')
 const { cv } = require('../model/cv') 
+const { admin} = require('../routes/admin')
 
 const getCv = async (req, res)=>{
     let admin = req.user
@@ -96,11 +97,47 @@ const updateRecommendation = async (req, res)=>{
 }
 
 
+const getUserCv = async (req, res) => {
+    const { userId } = req.params
+    let User = await user.findOne({_id:userId})
+    const userCv = await cv.findOne({ userId }).select('_id status adminId createdAt updatedAt')
+    if (!userCv) {
+      return res.status(404).send({
+        error: true,
+        msg: "cv not found"
+      })
+     
+    }
+    res.send({
+      userCv,
+      user:User
+    })
+  
+  };
 
+  const getDetailedUserCv = async (req, res) => {
+    const { userId } = req.params
+    let User = await user.findOne({_id:userId})
+    const userCv = await cv.findOne({ userId }).select('_id status adminId uploadedSection recommendation createdAt updatedAt')
+    if (!userCv) {
+      return res.status(404).send({
+        error: true,
+        msg: "cv not found"
+      })
+     
+    }
+    res.send({
+      userCv,
+      user:User
+    })
+  
+  };
  
 
 module.exports = {
     getCv,
     addAllRecommendation,
-    updateRecommendation
+    updateRecommendation,
+    getUserCv,
+    getDetailedUserCv
 }
