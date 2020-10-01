@@ -9,7 +9,10 @@
     callback(null, true)
   }
   renameFile = (req, file, callback) => {
-    callback(null, file.fieldname + '-' +Date.now() + Math.round(Math.random() * 1E9)+  ".pdf" ) 
+    let fileName =  file.fieldname + '-' +Date.now() + Math.round(Math.random() * 1E9)+  ".pdf"
+    req.fileName = fileName
+    callback(null, fileName) 
+   
 }
   module.exports={
       validateExtension,

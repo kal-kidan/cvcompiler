@@ -7,7 +7,7 @@ const {section} = require('./../model/section')
 
 const url = require('url');
 
-const getAdmin = async (req, res)=>{
+const getAdmin = async (req, res)=>{ 
     const superAdmin = req.user;   
     if(superAdmin.role=== "superAdmin"){ 
         const limit = parseInt(req.query.limit)  

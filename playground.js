@@ -1,54 +1,50 @@
-const { user } = require('./model/user')
-const { cv } = require('./model/cv')
-const { adminCv } = require('./model/adminCv')
-const {mongoose} = require("./connect");
 
-// const adminList = user.find({},{
-//     skip:0, // Starting Row
-//     limit:10, // Ending Row
-//     sort:{
-//         assignedCv: -1 //Sort by Date Added DESC
+const fs = require('fs')
+const pdfparse = require('pdf-parse')
+let {section} = require('./model/section')
+let sections = section.find({})
+console.log(sections.docs)
+ 
+// const path = "uploads/cvs/kal.pdf"
+// const file = fs.readFileSync(path)
+// const sections = ['education', 'skill', 'experience', 'contact', 'certification']
+// pdfparse(file).then((data)=>{
+//   let {text} = data 
+//   let cvSections = []
+//   sections.forEach((section, index)=>{
+//     let Section = section + " \n"
+//     var regex = new RegExp( `${Section}`  , "ig")
+//     let start = text.search(regex) 
+//     cvSections.push({start, name:section}) 
+//   })
+//   let uploadedSection = []
+//   cvSections = cvSections.sort(function(a, b){return  a.start - b.start })
+//   cvSections.forEach((cvsection,index)=>{
+//     let description
+//     if(index===cvSections.length-1){
+//       let start = cvSections[index].start + cvsection.name.length
+//       description = text.substring(start)
+//       description = description.trim()
+//       description = description.replace("\n", "")
 //     }
-// },
-// ['_id'], 
-//  function(err, result){
-//     if(err){
-//         console.log("can not find your list of admins", err)
-//         return
+//     else{
+//       let start = cvSections[index].start + cvsection.name.length
+//       let end =  cvSections[index+1].start 
+//       description = text.substring(start, end)
+//       description = description.trim()
+//       description = description.replace("\n", "")
 //     }
-//     console.log(result)
+     
+//       uploadedSection.push(
+//         {
+//           name: cvsection.name,
+//           description
+
+//         }
+//       )
+//   })
+
+//   console.log(uploadedSection)
+ 
+  
 // })
-
-async function assignCv(){
-    try{
-      const admin = await user.find({role: "admin"}, null, { 
-        skip:0, 
-        limit:1, 
-          sort:{
-        assignedCv: 1
-      } 
-    })
-
-    console.log(admin[0]._id)
-  
-      const newAdmin = new adminCv({
-          adminId: admin[0]._id,
-          cvId: '5f5c825477857618a1ae0d10'
-      })
-  
-      const addedAdmin = await newAdmin.save()
-      if(!addedAdmin){
-        console.log("error saving assigned admin")
-      }
-      else{
-          console.log(newAdmin)
-      }
-       
-    }
-    catch(error){
-        console.log(error)
-    }
-    
-  }
-
-  assignCv()

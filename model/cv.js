@@ -1,5 +1,6 @@
 const mongoose = require('./../lib/db-connect');
 const {user} = require('./user');
+ 
 const cvSchema = mongoose.Schema(
     {
         path: {
@@ -22,9 +23,11 @@ const cvSchema = mongoose.Schema(
           },
         uploadedSection:[
             {
-                name:{
-                   type: String,  
-                 },
+                sectionId:{
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: 'sections',
+                    required: true
+                } ,
                  description:{
                    type: String, 
                  }

@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 const auth = require('../middleware/auth')
 const superAdminController = require('./../controllers/SuperAdminController')
-const {check, validationResult} = require('express-validator')
+const {check} = require('express-validator')
 
 router.get('/admins', superAdminController.getAdmin)
 router.delete('/admin/:adminId', superAdminController.deleteAdmin)
