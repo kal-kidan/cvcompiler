@@ -1,8 +1,9 @@
-const {mongoose} = require('../connect');
+const mongoose = require('./../lib/db-connect');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const {cv} = require('./cv');
+const jwt = require('jsonwebtoken'); 
+var mongoosePaginate = require('mongoose-paginate')
+
 const userSchema = mongoose.Schema(
     {
         firstName: {
@@ -52,28 +53,18 @@ const userSchema = mongoose.Schema(
         },
         assignedCv:{
             type: Number
-        },
-        tokens: [
-            {
-                token: {
-                    type: String, 
-                    required: true
-                }
-            }
-        ],
-       
+        } 
     } 
-);
-userSchema.virtual('cvs', {
-    ref: 'cv',
-    localField: '_id',
-    foreignField: 'userId'
-})
+)
+
+userSchema.plugin(mongoosePaginate);
+ 
 userSchema.methods.getAuthToken = async function (){
-    const usere= this 
-    const token = jwt.sign({_id: usere._id.toString()}, "mynode"); 
-    usere.tokens = usere.tokens.concat({token});
-    await usere.save() 
+    let User= this 
+    const token = jwt.sign({
+        email: User.email,
+        _id: User._id
+    }, "mynode"); 
     return token;
  }
 
@@ -85,31 +76,36 @@ userSchema.methods.getAuthToken = async function (){
     return userObject 
   }
 
-  userSchema.statics.findByCredentials = async (email, password)=>{ 
-    const usere = await user.findOne({email})
-    if(!usere){
-        return ("incorrect username or password")
+  userSchema.statics.findByCredentials = async (email, password)=>{   
+    let User;
+    try {
+        User = await user.findOne({email})
+        if(!User){
+            return ("incorrect username or password")
+        }
+
+        const isValidPassword = await bcrypt.compare(password, User.password);
+
+        if(!isValidPassword){
+            return ("incorrect username or password")
+        }
+ 
+    } catch (error) {
+        console.log("error finding by credentials \n", error)
     }
-
-    const isValidPassword = await bcrypt.compare(password, usere.password);
-
-    if(!isValidPassword){
-        return ("incorrect username or password")
-    }
-
-    return usere;
+    return User;
 }
 
 userSchema.pre('save', async function(next){ 
-    const usere = this
-    if(usere.isModified('password')){ 
-        usere.password = await bcrypt.hash(usere.password, 8)
+    const user = this
+    if(user.isModified('password')){ 
+        user.password = await bcrypt.hash(user.password, 8)
     }
     next()
 })
 
  
 
-const user = mongoose.model('user',userSchema);
+const user = mongoose.model('users',userSchema);
 
 module.exports = {user};

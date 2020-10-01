@@ -3,8 +3,7 @@ const path = require("path");
 const  fs  = require("fs");
 const bcrypt = require('bcryptjs');
 const { user } = require("./../model/user");
-const { cv } = require("./../model/cv");
-const {mongoose} = require("./../connect");
+const { cv } = require("./../model/cv"); 
 const helper = require("./helper")
 
 const uploadCv = async (req, res) => {
@@ -72,7 +71,16 @@ async function saveCv(req, res) {
     assignedCv: 1
   } 
 })
-
+if(admin.length === 0){
+  return res.send(
+   {
+     error:{
+       error: true,
+       msg: "there is no any admin in the database"
+     }
+   }
+  )
+}
 admin = admin[0] 
 const adminId = admin._id
 
@@ -148,12 +156,20 @@ const getCv = async (req, res) => {
 
 };
 
-const getSection = async (req, res)=>{
+const getRecommendation = async (req, res)=>{
   try {
     let {_id} = req.user
-    let Cv = await cv.find({_id})
-    let {section} = Cv
-    res.send(section)
+    let Cv = await cv.find({userId:_id})
+    if(!Cv){
+      res.send({
+        error:{
+          error: true,
+          msg: "this user hasn't uploaded cv"
+        }
+      })
+    }
+    let {recommendation} = Cv
+    res.send({recommendation})
   } catch (error) {
     res.status(500).send({
       error: true,
@@ -217,5 +233,5 @@ module.exports = {
   uploadCv,
   updateUser,
   getCv,
-  getSection
+  getRecommendation
 };

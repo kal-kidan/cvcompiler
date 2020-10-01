@@ -1,4 +1,4 @@
-const {mongoose} = require('./../connect');
+const mongoose = require('./../lib/db-connect');
 const {user} = require('./user');
 const cvSchema = mongoose.Schema(
     {
@@ -20,14 +20,27 @@ const cvSchema = mongoose.Schema(
             type: String,
             default: 'new'
           },
-    
-        recommendation:[
+        uploadedSection:[
             {
                 name:{
                    type: String,  
                  },
                  description:{
                    type: String, 
+                 }
+            }
+        ],
+        recommendation:[
+         
+            {
+                sectionId:{
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: 'sections',
+                    required: true
+                } ,
+                 description:{
+                   type: String, 
+                   required: true
                  }
             }
            ],

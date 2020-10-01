@@ -4,23 +4,22 @@ const auth = require('../middleware/auth')
 const superAdminController = require('./../controllers/SuperAdminController')
 const {check, validationResult} = require('express-validator')
 
-router.get('/get/admins', auth, superAdminController.getAdmin)
-router.delete('/admin', auth, superAdminController.deleteAdmin)
+router.get('/admins', superAdminController.getAdmin)
+router.delete('/admin/:adminId', superAdminController.deleteAdmin)
 
-router.post('/register/admin', [
+router.post('/admin/register', [
     check('firstName').isAlpha().withMessage("enter valid name"),
     check('lastName').isAlpha().withMessage("enter valid name"),
     check('email').isEmail().withMessage("enter valid email"),
     check('phoneNumber').not().isEmpty().withMessage("enter valid phone number"), 
-],auth,superAdminController.registerAdmin)
+],superAdminController.registerAdmin)
 
-router.post('/addsection', [
-check('tittle').isAlpha().withMessage("enter valid tittle"),
-check('category').isAlpha().withMessage("enter valid category"),
-], auth,superAdminController.addSection)
+router.post('/section/add', [
+check('name').not().isEmpty().isAlpha().withMessage("enter valid name"),
+check('category').not().isEmpty().isAlpha().withMessage("enter valid category"),
+],superAdminController.addSection)
 
-router.delete('/section/:_id', auth, superAdminController.deleteSection)
-router.get('/sections', auth, superAdminController.getSections)
-router.get('/addsection', auth, superAdminController.addSection)
+router.delete('/section/:_id', superAdminController.deleteSection) 
+
 
 module.exports = router

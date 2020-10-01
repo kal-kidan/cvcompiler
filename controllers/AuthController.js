@@ -1,7 +1,5 @@
-const { user } = require('./../model/user')
-const { cv } = require('./../model/cv') 
-const mongoose = require("./../connect");
-const { validationResult, check } = require('express-validator');
+const { user } = require('./../model/user')  
+const { validationResult } = require('express-validator')
 
 const register = async (req, res) => {
     const errors = validationResult(req)
@@ -9,15 +7,15 @@ const register = async (req, res) => {
         res.status(400).send(errors)
         return
     }
-    var body = req.body;
+    var body = req.body
     var newUser = new user(
         body
-    );
+    )
 
     try {
-        const data = await newUser.save();
-        const token = await data.getAuthToken(); 
-        res.send({data, token, status:true, msg:"user successfuly signed up"});
+        let user = await newUser.save()
+        let token = await user.getAuthToken() 
+        res.send({user, token, status:true, msg:"user successfuly signed up"})
     } catch (error) {    
         if(error.keyValue){
             if(error.keyValue.email){   
@@ -28,11 +26,18 @@ const register = async (req, res) => {
                 emailError.value = req.body.email
                 emailError.location = 'body'
                 errorArray.errors.push(emailError)
-                res.status(400).send(errorArray); 
+                res.status(400).send(errorArray)
             }
         }
         else{
-            res.status(500).send(error)
+            res.status(500).send(
+                {
+                    errors:{
+                        msg : error.message
+                    }
+                }
+            )
+
         }
                 
              
@@ -43,22 +48,34 @@ const register = async (req, res) => {
 
 }
 const login = async (req, res)=>{ 
+    const errors = validationResult(req)
+    if(!errors.isEmpty()){
+        res.status(400).send(errors)
+        return
+    }
+    
     try {
-        const users = await user.findByCredentials(req.body.email, req.body.password);
+       let User = await user.findByCredentials(req.body.email, req.body.password) 
         let errors={msg:''}
-        if(users._id){
+        if(User._id){
             let status = true
-            const token = await users.getAuthToken();  
-            res.send({users, token, status});
+            const token = await User.getAuthToken() 
+            res.send({user: User, token, status})
         }
         else{
             let status = false
-            errors.msg=users;
-            res.status(400).send({errors, status});
+            errors.msg=User
+            res.status(400).send({errors, status})
         }
    
-    } catch (errors) { 
-          res.status(500).send({errors});
+    } catch (error) { 
+        console.log(error)
+          res.status(500).send({
+            errors:{
+                error:true,
+                msg: error.message
+            }
+          })
     }    
 
 }

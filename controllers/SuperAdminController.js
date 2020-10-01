@@ -1,9 +1,8 @@
 
 const multer =require('multer')
-const { validationResult, check } = require('express-validator'); 
+const { validationResult } = require('express-validator')
 
-const { user } = require('../model/user')
-const { cv } = require('../model/cv')
+const { user } = require('../model/user') 
 const {section} = require('./../model/section')
 
 const url = require('url');
@@ -12,9 +11,9 @@ const getAdmin = async (req, res)=>{
     const superAdmin = req.user;   
     if(superAdmin.role=== "superAdmin"){ 
         const limit = parseInt(req.query.limit)  
-        const skip = parseInt(req.query.skip)
+        const page = parseInt(req.query.page)
          
-        if( !(limit > 0 && skip >= 0) ) {  
+        if( !(limit > 0 && page > 0) ) {  
            res.status(400).send(
                {
                    "errors":{
@@ -25,12 +24,15 @@ const getAdmin = async (req, res)=>{
            return
         }
         try { 
-            const numberOfAdmins = await user.countDocuments({role: "admin"}) 
-            const admins = await user.find({role: "admin"}, null, { skip: skip, limit: limit})
-            const pageNumber = parseInt (skip/limit) + 1;
-            const pages = Math.ceil(numberOfAdmins/limit) 
-            const page = {pageNumber, pages}
-            res.send({admins, page})
+            user.paginate({}, { page, limit }, function(err, result) {
+              return  res.send(result)
+            });
+            // const numberOfAdmins = await user.countDocuments({role: "admin"}) 
+            // const admins = await user.find({role: "admin"}, null, { skip: skip, limit: limit})
+            // const pageNumber = parseInt (skip/limit) + 1;
+            // const pages = Math.ceil(numberOfAdmins/limit) 
+            // const page = {pageNumber, pages}
+            // res.send({admins, page})
         } catch (errors) {
             res.status(500).send({errors})
         }
@@ -48,7 +50,7 @@ const deleteAdmin = async (req, res)=>{
     const superAdmin = req.user;
     if(superAdmin.role === "superAdmin"){ 
         try {
-            const {adminId} = req.query   
+            const {adminId} = req.params   
             const admin = await user.deleteOne({_id: adminId});
             const numberOfDeletedAdmins = admin.n
             if(numberOfDeletedAdmins===1){
@@ -148,7 +150,7 @@ const addSection = async (req, res)=>{
     }
      
     try {
-      let savedSection = await section.create(addedSection)
+      let savedSection = await section.create(addedSection) 
       if(savedSection){
         res.send({
             status: true,
@@ -156,25 +158,13 @@ const addSection = async (req, res)=>{
         })
       }
     } catch (error) {
-        res.status(500).send({
+        res.status(400).send({
             error: true,
             msg: error.message
         })
     } 
 }
-
-const getSections = async (req, res)=>{ 
-    try {
-      let sections = await section.find({})
-      res.json(sections)
-    } catch (error) {
-        res.status(500).send({
-            error: true,
-            msg: error.message
-        })
-    } 
-}
-
+ 
 const deleteSection = async(req, res)=>{
     let {_id} = req.params 
     try {
@@ -208,7 +198,6 @@ module.exports = {
     getAdmin,
     deleteAdmin,
     registerAdmin,
-    addSection,
-    getSections,
+    addSection, 
     deleteSection
 }

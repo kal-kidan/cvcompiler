@@ -1,7 +1,7 @@
-const {mongoose} = require('./../connect'); 
+const mongoose = require('./../lib/db-connect'); 
 const sectionSchema = mongoose.Schema(
     {
-        title: {
+        name: {
             type: String,
             required: true,
             unique: true
