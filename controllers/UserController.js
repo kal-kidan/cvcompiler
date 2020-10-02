@@ -7,7 +7,8 @@ const pdfparse = require('pdf-parse')
 const { user } = require("./../model/user");
 const { cv } = require("./../model/cv"); 
 const { section } = require("./../model/section"); 
-const helper = require("./helper")
+const helper = require("./helper");
+const { start } = require("repl");
 
 const uploadCv = async (req, res) => {
   const storage = multer.diskStorage({
@@ -66,7 +67,7 @@ function validateAndUploadFile(req,res,err){
 }
 
 async function saveCv(req, res) {
-  let uploadedSection =  await sectionCv(req.fileName) 
+  let uploadedSection = await sectionCv(req.fileName) 
   var userId = req.user._id;
   var { path } = req.file;
   let admin = await user.find({role: "admin"}, null, { 
@@ -89,7 +90,7 @@ if(admin.length === 0){
   admin = admin[0] 
   const adminId = admin._id
 
-  var newCv = new cv({ path, userId, adminId, uploadedSection });
+  var newCv = new cv({ path, user:userId, adminId, uploadedSection });
   try {
     const data = await newCv.save(); 
     if (data) { 
@@ -109,10 +110,10 @@ if(admin.length === 0){
     }
   } catch (error) { 
     if (error.keyValue) {
-      if (error.keyValue.userId) {
+      if (error.keyValue.user) {
         let uploadError  = {} 
         uploadError.msg = 'you already uploaded a cv'
-        uploadError.param = 'userId'
+        uploadError.param = 'user'
         uploadError.value = req.user._id
         uploadError.location = 'body' 
         res.status(400).send({errors: uploadError}); 
@@ -132,6 +133,8 @@ async function sectionCv(fileName){
   let data = await pdfparse(file)
   let sections = await section.find({})
   let {text} = data 
+  text = text.toString()
+  text = text.trim()
   let cvSections = []
   sections.forEach((section, index)=>{
     let Section = section.name + " \n"
@@ -146,20 +149,19 @@ async function sectionCv(fileName){
 
   cvSections.forEach((cvsection,index)=>{
     let description
+    let start
+    let end
     if(index===cvSections.length-1){
-      let start = cvSections[index].start + cvsection.name.length
+       start = cvSections[index].start + cvsection.name.length
       description = text.substring(start)
-      description = description.trim()
-      description = description.replace("\n", "")
+    
     }
     else{
-      let start = cvSections[index].start + cvsection.name.length
-      let end =  cvSections[index+1].start 
-      description = text.substring(start, end)
-      description = description.trim()
-      description = description.replace("\n", "")
+       start = cvSections[index].start + cvsection.name.length
+       end =  cvSections[index+1].start 
+      description = text.substring(start, end) 
     }
-     
+    description = description.replace("\n", "")
       uploadedSection.push(
         {
           sectionId: cvsection._id,
@@ -197,7 +199,7 @@ async function assignCv(req,res, adminId){
 
 const getCv = async (req, res) => {
   const { _id } = req.user;  
-  const userCv = await cv.findOne({ userId: _id });
+  const userCv = await cv.findOne({ user: _id });
   if (!userCv) {
     res.status(404).send("cv not found");
     return;
@@ -220,7 +222,7 @@ const getCv = async (req, res) => {
 
 const getUserCv = async (req, res) => {
   const { _id } = req.user;  
-  const userCv = await cv.findOne({ userId: _id });
+  const userCv = await cv.findOne({ user: _id });
   if (!userCv) {
     return res.status(404).send({
       error: true,
@@ -237,7 +239,7 @@ const getUserCv = async (req, res) => {
 const getRecommendation = async (req, res)=>{
   try {
     let {_id} = req.user
-    let Cv = await cv.find({userId:_id})
+    let Cv = await cv.find({user:_id})
     if(!Cv){
       res.send({
         error:{

@@ -5,6 +5,6 @@ const adminController = require('./../controllers/adminController')
 router.get('/assigned-cv/:status',adminController.getCv) 
 router.post('/recommendation',adminController.addAllRecommendation) 
 router.patch('/recommendation/:_id',adminController.updateRecommendation) 
-router.get('/cv/user/:userId', adminController.getUserCv) 
-router.get('/detailedcv/user/:userId', adminController.getDetailedUserCv) 
+router.get('/cv/:_id', adminController.getUserCv) 
+router.get('/detailedcv/:_id', adminController.getDetailedUserCv) 
 module.exports  = router

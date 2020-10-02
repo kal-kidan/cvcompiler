@@ -1,6 +1,5 @@
 const { user } = require('../model/user')
 const { cv } = require('../model/cv') 
-const { admin} = require('../routes/admin')
 
 const getCv = async (req, res)=>{
     let admin = req.user
@@ -8,7 +7,7 @@ const getCv = async (req, res)=>{
     let {status} = req.params
     if(status === "onprogress" || status === "new" || status === "sent"){
         try {
-            const cvsAssigned = await cv.find({status,adminId})
+            const cvsAssigned = await cv.find({status,adminId}).populate('user')
             res.send(cvsAssigned)
        
         } catch (error) {
@@ -35,7 +34,7 @@ const addAllRecommendation = async (req, res)=>{
         let {userId} = req.body 
         let adminId = req.user._id
         let updatedCv = await cv.updateOne(
-             {userId,adminId },
+             {user:userId,adminId },
              { $addToSet: {recommendation} 
             }, 
              )
@@ -45,7 +44,7 @@ const addAllRecommendation = async (req, res)=>{
                 msg: "cv not found make sure you have the right privillege"
             })
         }
-        updatedCv = await  cv.findOneAndUpdate({userId}, {status: "onprogress"}, {new: true})
+        updatedCv = await  cv.findOneAndUpdate({user:userId}, {status: "onprogress"}, {new: true})
 
         return res.send({
             status: true,
@@ -71,6 +70,16 @@ const updateRecommendation = async (req, res)=>{
         'recommendation._id': _id 
         };
         cv.findOne(query).then(doc => {
+            if(!doc){
+                return res.status(404).send(
+                  { 
+                      error: {
+                        error:true,
+                        msg: "recommendation not found"
+                    }
+                }
+                )
+            }
             recommendation = doc.recommendation.id(_id ); 
             recommendation["description"] =description;
             doc.save();
@@ -81,10 +90,11 @@ const updateRecommendation = async (req, res)=>{
     
             })
         }).catch(err => {
-            res.send({
+            res.status(500).send({
                 error: true,
-                msg: error.messsage
+                msg: err.messsage
             })
+            console.log(err)
         });
       
     } catch (error) {
@@ -98,9 +108,8 @@ const updateRecommendation = async (req, res)=>{
 
 
 const getUserCv = async (req, res) => {
-    const { userId } = req.params
-    let User = await user.findOne({_id:userId})
-    const userCv = await cv.findOne({ userId }).select('_id status adminId createdAt updatedAt')
+    const { _id } = req.params
+    const userCv =  await cv.findOne({ _id }).populate('user').select('_id status adminId user createdAt updatedAt')
     if (!userCv) {
       return res.status(404).send({
         error: true,
@@ -109,16 +118,14 @@ const getUserCv = async (req, res) => {
      
     }
     res.send({
-      userCv,
-      user:User
+      userCv 
     })
   
   };
 
   const getDetailedUserCv = async (req, res) => {
-    const { userId } = req.params
-    let User = await user.findOne({_id:userId})
-    const userCv = await cv.findOne({ userId }).select('_id status adminId uploadedSection recommendation createdAt updatedAt')
+    const { _id } = req.params
+    const userCv = await cv.findOne({ _id }).populate('user').select('_id status adminId uploadedSection recommendation createdAt updatedAt')
     if (!userCv) {
       return res.status(404).send({
         error: true,
@@ -127,8 +134,7 @@ const getUserCv = async (req, res) => {
      
     }
     res.send({
-      userCv,
-      user:User
+      userCv 
     })
   
   };

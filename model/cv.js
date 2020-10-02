@@ -7,7 +7,7 @@ const cvSchema = mongoose.Schema(
             type: String,
             required: true
         },
-        userId: {
+        user: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'users',
             unique: true,
@@ -54,6 +54,8 @@ const cvSchema = mongoose.Schema(
     
     
 )
+
+ 
 const cv = mongoose.model('cv',cvSchema);
 
 module.exports = {cv};
