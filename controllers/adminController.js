@@ -1,5 +1,6 @@
 const { user } = require('../model/user')
 const { cv } = require('../model/cv') 
+const { section } = require('../model/section') 
 
 const getCv = async (req, res)=>{
     let admin = req.user
@@ -133,8 +134,23 @@ const getUserCv = async (req, res) => {
       })
      
     }
+    let sections = []
+    const {recommendation} = userCv
+    const {uploadedSection} = userCv
+    // res.send(uploadedSection)
+    // return
+    const dbsections = await section.find({}).select('_id name category')
+     uploadedSection.forEach((uploadedSection, index)=>{
+         if(!recommendation[index]){
+            recommendation[index] = ''
+         }
+         
+         let sectionId = uploadedSection.sectionId
+         let section = dbsections[index]
+         sections.push({sectionId, section,uploaded: uploadedSection.description, recommended: recommendation[index]})
+     })
     res.send({
-      userCv 
+        sections 
     })
   
   };
