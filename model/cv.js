@@ -47,6 +47,18 @@ const cvSchema = mongoose.Schema(
                  }
             }
            ],
+           editedSections:[
+            {
+                sectionId:{
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: 'sections',
+                    required: true
+                } ,
+                 description:{
+                   type: String, 
+                 }
+            }
+        ],
     } ,
     {
         timestamps: true

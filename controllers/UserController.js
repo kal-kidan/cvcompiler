@@ -8,7 +8,7 @@ const { user } = require("./../model/user");
 const { cv } = require("./../model/cv"); 
 const { section } = require("./../model/section"); 
 const helper = require("./helper");
-const { start } = require("repl");
+// const { start } = require("repl");
 
 const uploadCv = async (req, res) => {
   const storage = multer.diskStorage({
@@ -303,11 +303,83 @@ const updateUser = async (req, res) => {
        }
      }
      )
-
-   
-  
 };
 
+
+const addEditedSection = async (req, res)=>{
+  try {
+      let {editedSection} = req.body 
+      let userId = req.user._id
+      let updatedSection = await cv.updateOne(
+           {user:userId,adminId },
+           { $addToSet: {editedSection} 
+          }, 
+           )
+      if(updatedSection.nModified !== 1){
+         return res.status(404).send({
+              error: true,
+              msg: "cv not found make sure you have the right privillege"
+          })
+      }
+      return res.send({
+          status: true,
+          msg: "you have successfully edited cv section",
+          updatedData: updatedSection
+
+      })
+    
+  } catch (error) {
+      console.log(error)
+      res.status(500).send({
+          error: true,
+          msg: error.messsage
+      })
+  }
+}
+
+const updateRecommendation = async (req, res)=>{
+  try {
+      let {_id} = req.params 
+      let {description} = req.body 
+      const query = {
+      'editedSections._id': _id 
+      };
+      cv.findOne(query).then(doc => {
+          if(!doc){
+              return res.status(404).send(
+                { 
+                    error: {
+                      error:true,
+                      msg: "the section you are looking for not found"
+                  }
+              }
+              )
+          }
+          editedSections = doc.editedSections.id(_id ); 
+          editedSections["description"] =description;
+          doc.save();
+          return res.send({
+              status: true,
+              msg: "you have successfully edited admin recommendation",
+              updatedData: doc
+  
+          })
+      }).catch(err => {
+          res.status(500).send({
+              error: true,
+              msg: err.messsage
+          })
+          console.log(err)
+      });
+    
+  } catch (error) {
+      console.log(error)
+      res.status(500).send({
+          error: true,
+          msg: error.messsage
+      })
+  }
+}
 
 module.exports = {
   uploadCv,
