@@ -304,59 +304,46 @@ const updateUser = async (req, res) => {
      }
      )
 };
-
-
-const addEditedSection = async (req, res)=>{
-  try {
-      let {editedSection} = req.body 
-      let userId = req.user._id
-      let updatedSection = await cv.updateOne(
-           {user:userId,adminId },
-           { $addToSet: {editedSection} 
-          }, 
-           )
-      if(updatedSection.nModified !== 1){
-         return res.status(404).send({
-              error: true,
-              msg: "cv not found make sure you have the right privillege"
-          })
-      }
-      return res.send({
-          status: true,
-          msg: "you have successfully edited cv section",
-          updatedData: updatedSection
-
-      })
-    
-  } catch (error) {
-      console.log(error)
-      res.status(500).send({
-          error: true,
-          msg: error.messsage
-      })
-  }
-}
+ 
 
 const updateRecommendation = async (req, res)=>{
   try {
-      let {_id} = req.params 
-      let {description} = req.body 
+      const {sectionId} = req.params 
+      const {description} = req.body 
+      const editedSection ={sectionId,description}
+      let userId = req.user._id
       const query = {
-      'editedSections._id': _id 
+      'editedSections.sectionId': sectionId 
       };
-      cv.findOne(query).then(doc => {
+      cv.findOne(query).then(async (doc) =>  {
           if(!doc){
-              return res.status(404).send(
-                { 
-                    error: {
-                      error:true,
-                      msg: "the section you are looking for not found"
-                  }
+            console.log(editedSection)
+            let updatedSection = await cv.findOneAndUpdate(
+              {user:userId},
+              {
+                 $addToSet: {editedSections: editedSection} 
               }
               )
+              
+         if(updatedSection.nModified !== 1){
+            return res.status(404).send({
+                 error: true,
+                 msg: "cv not found make sure you have the right privillege"
+             })
+         }
+         return res.send({
+             status: true,
+             msg: "you have successfully edited cv section",
+             updatedData: doc
+   
+         })
+       
           }
-          editedSections = doc.editedSections.id(_id ); 
-          editedSections["description"] =description;
+          editedSections = doc.editedSections
+          sectionToEdit = editedSections.find(section=> section.sectionId == sectionId)
+          let _id = sectionToEdit._id
+          let section = doc.editedSections.id(_id)
+          section["description"] = description
           doc.save();
           return res.send({
               status: true,
@@ -386,5 +373,6 @@ module.exports = {
   updateUser,
   getCv,
   getRecommendation,
+  updateRecommendation,
   getUserCv
 };

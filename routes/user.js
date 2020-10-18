@@ -90,4 +90,5 @@ router.get('/cvfile', userController.getCv)
 router.patch('/update', userController.updateUser)
 router.get('/recommendation', userController.getRecommendation)
 router.get('/cv', userController.getUserCv)
+router.patch('/recommendation/:sectionId', userController.updateRecommendation)
 module.exports = router
