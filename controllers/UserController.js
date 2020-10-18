@@ -367,6 +367,39 @@ const updateRecommendation = async (req, res)=>{
       })
   }
 }
+const getDetailedUserCv = async (req, res) => {
+  const { userId } = req.params
+  const userCv = await cv.findOne({user: userId }).select('_id status adminId uploadedSection recommendation editedSections createdAt updatedAt')
+  if (!userCv) {
+    return res.status(404).send({
+      error: true,
+      msg: "cv not found"
+    })
+   
+  }
+  let sections = []
+  const {recommendation} = userCv
+  const {uploadedSection} = userCv
+  const {editedSections} = userCv
+  const dbsections = await section.find({}).select('_id name category')
+   uploadedSection.forEach((uploadedSection, index)=>{
+       if(!recommendation[index]){
+          recommendation[index] = ''
+       }
+       if(!editedSections[index]){
+        editedSections[index] = ''
+     }
+     
+       
+       let sectionId = uploadedSection.sectionId
+       let section = dbsections[index]
+       sections.push({sectionId, section,uploaded: uploadedSection.description, recommended: recommendation[index], editedSection: editedSections[index]})
+   })
+  res.send({
+      sections 
+  })
+
+};
 
 module.exports = {
   uploadCv,
@@ -374,5 +407,6 @@ module.exports = {
   getCv,
   getRecommendation,
   updateRecommendation,
-  getUserCv
+  getUserCv,
+  getDetailedUserCv
 };

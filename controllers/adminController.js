@@ -137,8 +137,6 @@ const getUserCv = async (req, res) => {
     let sections = []
     const {recommendation} = userCv
     const {uploadedSection} = userCv
-    // res.send(uploadedSection)
-    // return
     const dbsections = await section.find({}).select('_id name category')
      uploadedSection.forEach((uploadedSection, index)=>{
          if(!recommendation[index]){
