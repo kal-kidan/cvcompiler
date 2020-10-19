@@ -26,6 +26,7 @@ const cvSchema = mongoose.Schema(
                 sectionId:{
                     type: mongoose.Schema.Types.ObjectId,
                     ref: 'sections',
+                    unique:true,
                     required: true
                 } ,
                  description:{
@@ -39,6 +40,7 @@ const cvSchema = mongoose.Schema(
                 sectionId:{
                     type: mongoose.Schema.Types.ObjectId,
                     ref: 'sections',
+                    unique:true,
                     required: true
                 } ,
                  description:{
@@ -52,6 +54,7 @@ const cvSchema = mongoose.Schema(
                 sectionId:{
                     type: mongoose.Schema.Types.ObjectId,
                     ref: 'sections',
+                    unique:true,
                     required: true
                 } ,
                  description:{

@@ -8,7 +8,7 @@ const getCv = async (req, res)=>{
     let {status} = req.params
     if(status === "onprogress" || status === "new" || status === "sent"){
         try {
-            const cvsAssigned = await cv.find({status,adminId}).populate('user')
+            const cvsAssigned = await cv.find({status,adminId}).select('_id user').populate('user')
             res.send(cvsAssigned)
        
         } catch (error) {
@@ -32,10 +32,10 @@ const getCv = async (req, res)=>{
 const addAllRecommendation = async (req, res)=>{
     try {
         let {recommendation} = req.body
-        let {userId} = req.body 
+        let cvId = req.body.cvId 
         let adminId = req.user._id
         let updatedCv = await cv.updateOne(
-             {user:userId,adminId },
+             {_id:cvId,adminId },
              { $addToSet: {recommendation} 
             }, 
              )
@@ -45,7 +45,7 @@ const addAllRecommendation = async (req, res)=>{
                 msg: "cv not found make sure you have the right privillege"
             })
         }
-        updatedCv = await  cv.findOneAndUpdate({user:userId}, {status: "onprogress"}, {new: true})
+        updatedCv = await  cv.findOneAndUpdate({_id:cvId}, {status: "onprogress"}, {new: true})
 
         return res.send({
             status: true,
