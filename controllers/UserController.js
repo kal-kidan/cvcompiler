@@ -357,6 +357,7 @@ const updateEditedSection  = async (req, res, doc,cvSection) =>{
     let _id = sectionToEdit._id
     let section = doc.editedSections.id(_id)
     section["description"] = description
+    section["updatedAt"] = Date.now()
     await doc.save();
   } catch (error) {
     console.log("from update edited section",error)

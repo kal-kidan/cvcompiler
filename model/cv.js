@@ -32,7 +32,11 @@ const cvSchema = mongoose.Schema(
                  description:{
                    type: String, 
                  },
-                 date:{
+                 createdAt:{
+                    type: Date,
+                    default: Date.now()
+                },
+                updatedAt:{
                     type: Date,
                     default: Date.now()
                 }
@@ -52,7 +56,11 @@ const cvSchema = mongoose.Schema(
                    type: String, 
                    required: true
                  },
-                 date:{
+                 createdAt:{
+                    type: Date,
+                    default: Date.now()
+                },
+                updatedAt:{
                     type: Date,
                     default: Date.now()
                 }
@@ -69,7 +77,11 @@ const cvSchema = mongoose.Schema(
                  description:{
                    type: String, 
                  },
-                date:{
+                 createdAt:{
+                    type: Date,
+                    default: Date.now()
+                },
+                updatedAt:{
                     type: Date,
                     default: Date.now()
                 }

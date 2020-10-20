@@ -88,6 +88,7 @@ const updateRecommendation = async (req, res,doc,rc)=>{
         let _id = doc.recommendation.find(section=> section.sectionId == rc.sectionId)._id
         recommendation = doc.recommendation.id(_id); 
         recommendation["description"] = rc.description;
+        recommendation["updatedAt"] = Date.now()
         doc.save();
     } catch (error) {
        console.log("from update recommendation",error)
