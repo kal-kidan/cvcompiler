@@ -306,13 +306,22 @@ const updateUser = async (req, res) => {
 };
 
 const saveAll = async (req,res)=>{
-  const cvSections = req.body
-  let userCv = await cv.findOne({user:req.user._id});
-  if(! userCv ){
-    return res.status(404).send({
-      error: true,
-      msg: "user cv is not found"
-  })
+
+  const cvSections = req.body.sections
+  const {cvId} = req.body
+  try {
+    let userCv = await cv.findOne({user:req.user._id, _id:cvId});
+    if(! userCv ){
+      return res.status(404).send({
+        error: true,
+        msg: "user cv is not found"
+    })
+    }
+  } catch (error) {
+    return res.status(400).send(
+      {error:true,
+      msg: error.message}
+    )
   }
  
   for(let i=0; i<cvSections.length; i++){
@@ -371,9 +380,10 @@ const updateEditedSection  = async (req, res, doc,cvSection) =>{
   
  const addEdittedRecommendation = async (req, res, editedSection)=>{
    let userId = req.user._id;
+   let {cvId} = req.body
   try {
     let updatedSection = await cv.findOneAndUpdate(
-      {user:userId},
+      {user:userId, _id:cvId},
       {
         $addToSet: {editedSections: editedSection} 
       }
@@ -395,6 +405,7 @@ const updateRecommendation = async (req, res)=>{
       const {description} = req.body 
       const editedSection ={sectionId,description}
       let userId = req.user._id
+      let {cvId} = req.body
       const query = {
       'editedSections.sectionId': sectionId 
       };
@@ -402,7 +413,7 @@ const updateRecommendation = async (req, res)=>{
           if(!doc){
             console.log(editedSection)
             let updatedSection = await cv.findOneAndUpdate(
-              {user:userId},
+              {user:userId,_id:cvId},
               {
                  $addToSet: {editedSections: editedSection} 
               }

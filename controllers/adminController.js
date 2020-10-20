@@ -30,11 +30,21 @@ const addAllRecommendation = async (req, res)=>{
     let {recommendations} = req.body
     let cvId = req.body.cvId 
     let adminId = req.user._id
-    if(! await cv.findOne({_id:cvId, adminId})){
-       return res.status(404).send({
-            error: true,
-            msg: "cv not found"
-        })
+    try {
+        let cvAdmin = await cv.findOne({_id:cvId, adminId})
+        if(!cvAdmin ){
+            return res.status(404).send({
+                 error: true,
+                 msg: "cv not found"
+             })
+         }
+    } catch (error) {
+        return res.status(400).send(
+            {
+              error: true,
+              msg: error.message  
+            }            
+        )
     }
 
     for(let i=0;i<recommendations.length;i++){
