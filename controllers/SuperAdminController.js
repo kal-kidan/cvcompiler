@@ -9,67 +9,51 @@ const url = require('url');
 
 const getAdmin = async (req, res)=>{ 
     const superAdmin = req.user;   
-    if(superAdmin.role=== "superAdmin"){ 
-        const limit = parseInt(req.query.limit)  
-        const page = parseInt(req.query.page)
-        if( !(limit > 0 && page > 0) ) {  
-           res.status(400).send(
-               {
-                   "errors":{
-                       "msg": "invalid input"
-                   }
+    const limit = parseInt(req.query.limit)  
+    const page = parseInt(req.query.page)
+    if( !(limit > 0 && page > 0) ) {  
+       res.status(400).send(
+           {
+               "errors":{
+                   "msg": "invalid input"
                }
-           )
-           return
-        }
-        try { 
-            user.paginate({role: "admin"}, { page, limit }, function(err, result) {
-              return  res.send(result)
-            });
-        } catch (errors) {
-            res.status(500).send({errors})
-        }
-       
+           }
+       )
+       return
     }
-    else{
-        res.status(400).send({errors:{
-            msg: "only super admin is privilleged to access this route"
-        }})
+    try { 
+        user.paginate({role: "admin"}, { page, limit }, function(err, result) {
+          return  res.send(result)
+        });
+    } catch (errors) {
+        res.status(500).send({errors})
     }
       
  }
  
 const deleteAdmin = async (req, res)=>{ 
     const superAdmin = req.user;
-    if(superAdmin.role === "superAdmin"){ 
-        try {
-            const {adminId} = req.params   
-            const admin = await user.deleteOne({_id: adminId});
-            const numberOfDeletedAdmins = admin.n
-            if(numberOfDeletedAdmins===1){
-                res.send({ 
-                    status: true, 
-                    msg: "the admin successfuly deleted"
-                })  
-            }
-            else{
-                res.status(404).send({
-                    status: false, 
-                    msg: "the admin id is not found"
-                }) 
-            }
-          
-        } catch (error) {
-            const errors = {}
-            errors.msg = "invalid admin id"
-            res.status(400).send({errors})
+    try {
+        const {adminId} = req.params   
+        const admin = await user.deleteOne({_id: adminId});
+        const numberOfDeletedAdmins = admin.n
+        if(numberOfDeletedAdmins===1){
+            res.send({ 
+                status: true, 
+                msg: "the admin successfuly deleted"
+            })  
         }
-       
-    }
-    else{
-        res.status(400).send({errors:{
-            msg: "only super admin is privilleged to access this route"
-        }})
+        else{
+            res.status(404).send({
+                status: false, 
+                msg: "the admin id is not found"
+            }) 
+        }
+      
+    } catch (error) {
+        const errors = {}
+        errors.msg = "invalid admin id"
+        res.status(400).send({errors})
     }
   
 }
@@ -81,54 +65,46 @@ const registerAdmin = async (req, res)=>{
         return
     }
     const superAdmin = req.user;
-    if(superAdmin.role === "superAdmin"){
-        try {
-            var body = req.body;
-            var admin = new user(
-                {
-                    firstName: body.firstName,
-                    lastName: body.lastName,
-                    email: body.email,
-                    phoneNumber: body.phoneNumber,
-                    password: "adminadmin",
-                    role: "admin", 
-                    assignedCv: 0
-                }           
-            );
+    try {
+        var body = req.body;
+        var admin = new user(
+            {
+                firstName: body.firstName,
+                lastName: body.lastName,
+                email: body.email,
+                phoneNumber: body.phoneNumber,
+                password: "adminadmin",
+                role: "admin", 
+                assignedCv: 0
+            }           
+        );
 
-            let savedAdmin = await admin.save()
-            res.send({
-                data: admin,
-                status: true,
-                msg: "admin registered successfuly"
-            })
-        } catch (error) {
-            
-            if(error.keyValue){
-                if(error.keyValue.email){
-                    let emailError  = {}
-                    let errorArray = {errors:[]}
-                    emailError.msg = 'this email has been taken'
-                    emailError.param = 'email'
-                    emailError.value = req.body.email
-                    emailError.location = 'body'
-                    errorArray.errors.push(emailError)
-                    res.status(400).send(errorArray); 
-                }  
-            }
-
-            else{
-                res.status(500).send(error)
-            }
-          
-            
+        let savedAdmin = await admin.save()
+        res.send({
+            data: admin,
+            status: true,
+            msg: "admin registered successfuly"
+        })
+    } catch (error) {
+        
+        if(error.keyValue){
+            if(error.keyValue.email){
+                let emailError  = {}
+                let errorArray = {errors:[]}
+                emailError.msg = 'this email has been taken'
+                emailError.param = 'email'
+                emailError.value = req.body.email
+                emailError.location = 'body'
+                errorArray.errors.push(emailError)
+                res.status(400).send(errorArray); 
+            }  
         }
-       
-    }
-    else{
-        res.status(400).send({error:{
-            msg: "only super admin is privilleged to access this route"
-        }})
+
+        else{
+            res.status(500).send(error)
+        }
+      
+        
     }
 }
 
