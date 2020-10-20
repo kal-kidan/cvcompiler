@@ -2,6 +2,7 @@ const multer = require("multer");
 const path = require("path"); 
 const bcrypt = require('bcryptjs');
 const fs = require('fs')
+const { validationResult } = require('express-validator')
 const pdfparse = require('pdf-parse')
 
 const { user } = require("./../model/user");
@@ -258,51 +259,48 @@ const getRecommendation = async (req, res)=>{
   }
 }
 
-const updateUser = async (req, res) => { 
-  let userPassed = {}
-  if (!req.body) {
-    res.status(400).send({
-      errors: {
-        msg: "please enter data to be updated",
-      },
-    });
-    return;
+const updateUser = async (req, res) => {
+  const errors = validationResult(req) 
+  if(!errors.isEmpty()){
+    return res.status(400).send(errors)  
   }
- 
-  if(req.body.password){
-    userPassed.password = req.body.password;
-  }
-
+  let userPassed = req.body
   const {_id} = req.user;
-  if(userPassed.password){
+  if(req.body.password){
     try {
-      userPassed.password = await bcrypt.hash(userPassed.password, 8) 
+      userPassed.password = await bcrypt.hash(req.body.password, 8) 
     } catch (error) {
       res.send(error)
     }
    
 }
 
-  let userReturned = "";
-  user.findOneAndUpdate(
-     {_id},
-     userPassed,
-     {new: true, runValidators: true, useFindAndModify:false } ,
-     function(err, result){
-       if(err){
-         console.log(err)
-          res.status(500).send(err)
-          
-       }
-       else{
-        res.send({
-          data: result,
-          status: true,
-          msg: "user updated sucessfuly"
-        })
-       }
-     }
-     )
+ try {
+  let updatedUser = await user.findOne({_id})
+  updatedUser.firstName = userPassed.firstName
+  updatedUser.lastName = userPassed.lastName
+  updatedUser.email = userPassed.email
+  updatedUser.phoneNumber = userPassed.phoneNumber
+  updatedUser.password = userPassed.password
+  let result  = await updatedUser.save();
+  if(result){
+   return res.send({
+      data: result,
+      status: true,
+      msg: "user updated sucessfuly"
+    })
+  }
+ } catch (error) {
+   console.log(error);
+  return res.status(500).send(
+    {
+      error: true,
+      msg: error.message
+    }
+  )
+ }
+ 
+   
 };
 
 const saveAll = async (req,res)=>{

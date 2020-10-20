@@ -6,7 +6,7 @@ const multer =require('multer')
 const path = require('path')
 const helper = require('./../controllers/helper')
 const {hashPassword} = require('./../middleware/hash_password')
-
+const {check} = require('express-validator')
 /**
  *  @swagger
  * 
@@ -83,7 +83,13 @@ router.get('/cvfile', userController.getCv)
  *          description: invalid data provided
  */
  
-router.patch('/update', userController.updateUser)
+router.patch('/update',[
+    check('firstName').isAlpha().withMessage("enter valid name"),
+    check('lastName').isAlpha().withMessage("enter valid name"),
+    check('email').isEmail().withMessage("enter valid email"),
+    check('phoneNumber').not().isEmpty().withMessage("enter valid phone number"),
+    check('password').isLength({min: 6}).withMessage("enter valid password") 
+], userController.updateUser)
 
 /**
  *  @swagger
