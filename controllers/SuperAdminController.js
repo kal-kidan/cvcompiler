@@ -12,7 +12,6 @@ const getAdmin = async (req, res)=>{
     if(superAdmin.role=== "superAdmin"){ 
         const limit = parseInt(req.query.limit)  
         const page = parseInt(req.query.page)
-         
         if( !(limit > 0 && page > 0) ) {  
            res.status(400).send(
                {
@@ -24,15 +23,9 @@ const getAdmin = async (req, res)=>{
            return
         }
         try { 
-            user.paginate({}, { page, limit }, function(err, result) {
+            user.paginate({role: "admin"}, { page, limit }, function(err, result) {
               return  res.send(result)
             });
-            // const numberOfAdmins = await user.countDocuments({role: "admin"}) 
-            // const admins = await user.find({role: "admin"}, null, { skip: skip, limit: limit})
-            // const pageNumber = parseInt (skip/limit) + 1;
-            // const pages = Math.ceil(numberOfAdmins/limit) 
-            // const page = {pageNumber, pages}
-            // res.send({admins, page})
         } catch (errors) {
             res.status(500).send({errors})
         }
