@@ -7,6 +7,8 @@ const {check} = require('express-validator')
  * 
  *  /auth/signup:
  *    post:
+ *      tags:
+ *        - auth
  *      description: user registration (user, admin)
  *      consumes:
  *        - application/json
@@ -75,6 +77,8 @@ router.post('/signup', [
  * 
  *  /auth/login:
  *    post:
+ *      tags:
+ *        - auth
  *      description: login
  *      consumes:
  *        - application/json

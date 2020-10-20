@@ -480,25 +480,31 @@ const getDetailedUserCv = async (req, res) => {
   const dbsections = await section.find({}).select('_id name category')
    uploadedSection.forEach((uploadedSection, index)=>{
        if(!recommendation[index]){
-          recommendation[index] = ''
+          recommendation[index] = {description:''}
        }
        if(!editedSections[index]){
-        editedSections[index] = ''
+        editedSections[index] = {description:'', updatedAt: ''}
      }
-     
-       
        let sectionId = uploadedSection.sectionId
        let section = dbsections[index]
-       sections.push({sectionId, section,uploaded: uploadedSection.description, recommended: recommendation[index], editedSection: editedSections[index]})
+       sections.push({sectionId, section,uploaded: uploadedSection.description, recommended: recommendation[index].description, editedSection: editedSections[index].description})
    })
   res.send({
       sections,
-      createdAt,
-      updatedAt 
+      userSectionUpdatedAt: getLatestUpdate(editedSections),
+      cvCreatedAt: createdAt,
+      cvUpdatedAt: updatedAt 
   })
 
-};
-
+}
+function getLatestUpdate(datas){
+  let updatedAt = '';
+  datas.forEach((data, index)=>{
+      updatedAt = updatedAt > data.updatedAt ? updatedAt:data.updatedAt
+   })
+   
+   return updatedAt
+}
 module.exports = {
   uploadCv,
   updateUser,
