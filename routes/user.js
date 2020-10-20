@@ -49,7 +49,7 @@ router.post('/upload/cv', userController.uploadCv)
  *          description: user hasn't upload cv  
  *     
  */
-router.get('/cvfile', userController.getCv)
+router.get('/cvfile/:_id', userController.getCv)
 /**
  *  @swagger
  * 
@@ -83,7 +83,7 @@ router.get('/cvfile', userController.getCv)
  *          description: invalid data provided
  */
  
-router.patch('/update',[
+router.patch('/update/:_id',[
     check('firstName').isAlpha().withMessage("enter valid name"),
     check('lastName').isAlpha().withMessage("enter valid name"),
     check('email').isEmail().withMessage("enter valid email"),
@@ -168,5 +168,5 @@ router.get('/cv/:_id', userController.getDetailedUserCv)
  *        400: 
  *          description: invalid cv id format
  */
-router.patch('/recommendation', userController.saveAll)
+router.patch('/recommendation/:cvId', userController.saveAll)
 module.exports = router

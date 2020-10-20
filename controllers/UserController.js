@@ -199,10 +199,13 @@ async function assignCv(req,res, adminId){
 }
 
 const getCv = async (req, res) => {
-  const  userId  = req.user._id;  
+  const  userId  = req.params._id;  
   const userCv = await cv.findOne({ user: userId});
   if (!userCv) {
-    res.status(404).send("cv not found");
+    res.status(404).send({
+      error: true,
+      msg: "cv not found"
+    });
     return;
   }
   const path = userCv.path; 
@@ -265,12 +268,15 @@ const updateUser = async (req, res) => {
     return res.status(400).send(errors)  
   }
   let userPassed = req.body
-  const {_id} = req.user;
+  const {_id} = req.params;
   if(req.body.password){
     try {
       userPassed.password = await bcrypt.hash(req.body.password, 8) 
     } catch (error) {
-      res.send(error)
+      return res.send({
+        error: true,
+        msg: error.message
+      })
     }
    
 }
@@ -291,8 +297,7 @@ const updateUser = async (req, res) => {
     })
   }
  } catch (error) {
-   console.log(error);
-  return res.status(500).send(
+  return res.status(400).send(
     {
       error: true,
       msg: error.message
@@ -306,7 +311,7 @@ const updateUser = async (req, res) => {
 const saveAll = async (req,res)=>{
 
   const cvSections = req.body.sections
-  const {cvId} = req.body
+  const {cvId} = req.params
   try {
     let userCv = await cv.findOne({user:req.user._id, _id:cvId});
     if(! userCv ){
