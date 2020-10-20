@@ -198,8 +198,8 @@ async function assignCv(req,res, adminId){
 }
 
 const getCv = async (req, res) => {
-  const { _id } = req.user;  
-  const userCv = await cv.findOne({ user: _id });
+  const  userId  = req.user._id;  
+  const userCv = await cv.findOne({ user: userId});
   if (!userCv) {
     res.status(404).send("cv not found");
     return;
@@ -462,8 +462,8 @@ const updateRecommendation = async (req, res)=>{
   }
 }
 const getDetailedUserCv = async (req, res) => {
-  const { userId } = req.params
-  const userCv = await cv.findOne({user: userId }).select('_id status adminId uploadedSection recommendation editedSections createdAt updatedAt')
+  const { _id } = req.params
+  const userCv = await cv.findOne({_id }).select('_id status adminId uploadedSection recommendation editedSections createdAt updatedAt')
   if (!userCv) {
     return res.status(404).send({
       error: true,

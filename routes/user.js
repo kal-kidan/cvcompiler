@@ -88,6 +88,6 @@ router.get('/cvfile', userController.getCv)
  */
 router.patch('/update', userController.updateUser)
 router.get('/recommendation', userController.getRecommendation)
-router.get('/cv/:userId', userController.getDetailedUserCv)
+router.get('/cv/:_id', userController.getDetailedUserCv)
 router.patch('/recommendation', userController.saveAll)
 module.exports = router
