@@ -19,16 +19,15 @@ const {hashPassword} = require('./../middleware/hash_password')
  *          schema: 
  *             type: file 
  *          required: true 
- *        - in: header
- *          description: authorization token
- *          name: authorization
- *          type: string
- *          required: true     
+ *        - in: header 
+ *          type: apiKey,
+ *          name: Authorization
  *      responses:
  *        200:
  *          description: cv uploaded successfuly 
  *        400: 
  *          description: invalid file format only pdf files are allowed  
+ * 
  *     
  */
 router.post('/upload/cv', userController.uploadCv)
@@ -84,11 +83,11 @@ router.get('/cvfile', userController.getCv)
  *        200:
  *          description: cv uploaded successfuly 
  *        400: 
- *          description: invalid file format only pdf files are allowed  
+ *          description: invalid file format only pdf files are 
  *     
  */
 router.patch('/update', userController.updateUser)
 router.get('/recommendation', userController.getRecommendation)
 router.get('/cv/:userId', userController.getDetailedUserCv)
-router.patch('/recommendation/:sectionId', userController.updateRecommendation)
+router.patch('/recommendation', userController.saveAll)
 module.exports = router

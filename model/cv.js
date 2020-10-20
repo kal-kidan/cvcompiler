@@ -31,8 +31,13 @@ const cvSchema = mongoose.Schema(
                 } ,
                  description:{
                    type: String, 
-                 }
+                 },
+                 date:{
+                    type: Date,
+                    default: Date.now()
+                }
             }
+            
         ],
         recommendation:[
          
@@ -46,8 +51,12 @@ const cvSchema = mongoose.Schema(
                  description:{
                    type: String, 
                    required: true
-                 }
-            }
+                 },
+                 date:{
+                    type: Date,
+                    default: Date.now()
+                }
+            } 
            ],
            editedSections:[
             {
@@ -59,8 +68,12 @@ const cvSchema = mongoose.Schema(
                 } ,
                  description:{
                    type: String, 
-                 }
-            }
+                 },
+                date:{
+                    type: Date,
+                    default: Date.now()
+                }
+            } 
         ],
     } ,
     {

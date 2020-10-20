@@ -23,84 +23,75 @@ const getCv = async (req, res)=>{
             msg: `/admin/assigned-cv/${status} not found`
             }
         })
-    }
-  
-    
+    } 
 }
 
-
 const addAllRecommendation = async (req, res)=>{
-    try {
-        let {recommendation} = req.body
-        let cvId = req.body.cvId 
-        let adminId = req.user._id
-        let updatedCv = await cv.updateOne(
-             {_id:cvId,adminId },
-             { $addToSet: {recommendation} 
-            }, 
-             )
-        if(updatedCv.nModified !== 1){
-           return res.status(404).send({
-                error: true,
-                msg: "cv not found make sure you have the right privillege"
-            })
-        }
-        updatedCv = await  cv.findOneAndUpdate({_id:cvId}, {status: "onprogress"}, {new: true})
-
-        return res.send({
-            status: true,
-            msg: "you have successfully added recommendation",
-            updatedData: updatedCv
-
+    let {recommendations} = req.body
+    let cvId = req.body.cvId 
+    let adminId = req.user._id
+    if(! await cv.findOne({_id:cvId, adminId})){
+       return res.status(404).send({
+            error: true,
+            msg: "cv not found"
         })
-      
+    }
+
+    for(let i=0;i<recommendations.length;i++){
+            let recommendation = recommendations[i]
+            const query = {
+            'recommendation.sectionId': recommendation.sectionId 
+            }
+            cv.findOne(query).then(doc => {
+                if(doc){
+                    updateRecommendation(req,res,doc,recommendation)
+                }
+                else{
+                   addRecommendation(req,res,recommendation,cvId)     
+                }
+            }).catch(err => {
+               return res.status(500).send({
+                    error: true,
+                    msg: err.messsage
+                })
+                console.log(err)
+            });
+    }
+    return res.send({
+        status: true,
+        msg: "you have successfully added recommendation",
+
+    })
+         
+}
+
+const addRecommendation = async (req, res,recommendation, cvId)=>{
+    try {
+        let adminId = req.user._id
+        await cv.updateOne(
+            {_id:cvId,adminId },
+            { $addToSet: {recommendation} }, 
+                )
+        let updatedCv = await  cv.findOneAndUpdate({_id:cvId}, {status: "onprogress"}, {new: true})
+
     } catch (error) {
-        console.log(error)
-        res.status(500).send({
+        console.log("from add recommendation", error);
+        return res.status(500).send({
             error: true,
             msg: error.messsage
         })
     }
+        
 }
-
-const updateRecommendation = async (req, res)=>{
+const updateRecommendation = async (req, res,doc,rc)=>{
     try {
-        let {_id} = req.params 
-        let {description} = req.body 
-        const query = {
-        'recommendation._id': _id 
-        };
-        cv.findOne(query).then(doc => {
-            if(!doc){
-                return res.status(404).send(
-                  { 
-                      error: {
-                        error:true,
-                        msg: "recommendation not found"
-                    }
-                }
-                )
-            }
-            recommendation = doc.recommendation.id(_id ); 
-            recommendation["description"] =description;
-            doc.save();
-            return res.send({
-                status: true,
-                msg: "you have successfully added recommendation",
-                updatedData: doc
-    
-            })
-        }).catch(err => {
-            res.status(500).send({
-                error: true,
-                msg: err.messsage
-            })
-            console.log(err)
-        });
-      
+        let _id = doc.recommendation.find(section=> section.sectionId == rc.sectionId)._id
+        recommendation = doc.recommendation.id(_id); 
+        recommendation["description"] = rc.description;
+        doc.save();
     } catch (error) {
-        console.log(error)
-        res.status(500).send({
+       console.log("from update recommendation",error)
+       return res.status(500).send({
             error: true,
             msg: error.messsage
         })
@@ -157,7 +148,6 @@ const getUserCv = async (req, res) => {
 module.exports = {
     getCv,
     addAllRecommendation,
-    updateRecommendation,
     getUserCv,
     getDetailedUserCv
 }

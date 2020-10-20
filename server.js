@@ -18,7 +18,21 @@ const { cv } = require('./model/cv');
 const swaggerOptions = {
     definition:{
         openapi: "3.0.1",
+        components:{
+            securitySchemes: {
+                ApiKeyAuth:{
+                    type: "apiKey",
+                    in: "header",
+                    name: "Authorization"
+                  }
+            }
+        }    ,
         
+        security: {
+            ApiKeyAuth: []
+        }
+        
+        },
     info: {
         title: "Cv Compiler API",
         version: "1.0.0",
@@ -28,7 +42,7 @@ const swaggerOptions = {
             email: "kal05627356@gmail.com"
         }
     },
-    },
+     
     apis: [ './routes/auth.js', './routes/user.js', './routes/admin.js' , './routes/SuperAdmin.js', './routes/index.js'],
  
 }

@@ -304,6 +304,88 @@ const updateUser = async (req, res) => {
      }
      )
 };
+
+const saveAll = async (req,res)=>{
+  const cvSections = req.body
+  let userCv = await cv.findOne({user:req.user._id});
+  if(! userCv ){
+    return res.status(404).send({
+      error: true,
+      msg: "user cv is not found"
+  })
+  }
+ 
+  for(let i=0; i<cvSections.length; i++){
+    let {sectionId} = cvSections[i]
+    let {description} = cvSections[i]
+    let editedSection ={sectionId,description}
+    let query = {
+      'editedSections.sectionId': sectionId 
+      };
+      cv.findOne(query).then(async (doc) =>  {
+        if(doc){
+          updateEditedSection(req,res,doc,cvSections[i])
+        }
+        else {
+          addEdittedRecommendation(req,res,editedSection)
+        }
+       
+    }).catch(err => {
+      console.log(err)
+       return res.status(500).send({
+            error: true,
+            msg: err.messsage
+        })
+        
+        
+    });
+  
+} 
+return res.send({
+  status: true,
+  msg: "you have successfully edited admin recommendation" 
+
+})
+  }
+
+
+const updateEditedSection  = async (req, res, doc,cvSection) =>{
+  try {
+    let {sectionId} = cvSection
+    let {description} = cvSection
+    sectionToEdit =  doc.editedSections.find(section=> section.sectionId == sectionId)
+    let _id = sectionToEdit._id
+    let section = doc.editedSections.id(_id)
+    section["description"] = description
+    await doc.save();
+  } catch (error) {
+    console.log("from update edited section",error)
+   return res.status(500).send({
+      error: true,
+      msg: error.messsage
+  })
+  }
+}
+
+  
+ const addEdittedRecommendation = async (req, res, editedSection)=>{
+   let userId = req.user._id;
+  try {
+    let updatedSection = await cv.findOneAndUpdate(
+      {user:userId},
+      {
+        $addToSet: {editedSections: editedSection} 
+      }
+      )
+   } catch (error) {
+    console.log("from add edited section",error)
+    return res.status(500).send({
+      error: true,
+      msg: error.messsage
+  })
+   }
+
+ }
  
 
 const updateRecommendation = async (req, res)=>{
@@ -412,5 +494,6 @@ module.exports = {
   getRecommendation,
   updateRecommendation,
   getUserCv,
+  saveAll,
   getDetailedUserCv
 };
