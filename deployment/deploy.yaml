@@ -42,5 +42,5 @@ spec:
             path: /
             port: 3000
         ports:
-        - name: cv-comp-api-st-port
+        - name: cv-api-st-port
           containerPort: 3000
