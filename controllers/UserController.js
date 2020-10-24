@@ -199,8 +199,8 @@ async function assignCv(req,res, adminId){
 }
 
 const getCv = async (req, res) => {
-  const  userId  = req.params._id;  
-  const userCv = await cv.findOne({ user: userId});
+  const  _id  = req.params._id;  
+  const userCv = await cv.findOne({ _id});
   if (!userCv) {
     res.status(404).send({
       error: true,
@@ -242,8 +242,8 @@ const getUserCv = async (req, res) => {
 
 const getRecommendation = async (req, res)=>{
   try {
-    let {_id} = req.user
-    let Cv = await cv.find({user:_id})
+    let {_id} = req.params
+    let Cv = await cv.findOne({user:_id})
     if(!Cv){
       res.send({
         error:{
@@ -320,13 +320,7 @@ const saveAll = async (req,res)=>{
         msg: "user cv is not found"
     })
     }
-  } catch (error) {
-    return res.status(400).send(
-      {error:true,
-      msg: error.message}
-    )
-  }
- 
+    
   for(let i=0; i<cvSections.length; i++){
     let {sectionId} = cvSections[i]
     let {description} = cvSections[i]
@@ -358,6 +352,13 @@ return res.send({
   msg: "you have successfully edited admin recommendation" 
 
 })
+  } catch (error) {
+    return res.status(400).send(
+      {error:true,
+      msg: error.message}
+    )
+  }
+
   }
 
 
@@ -383,7 +384,7 @@ const updateEditedSection  = async (req, res, doc,cvSection) =>{
   
  const addEdittedRecommendation = async (req, res, editedSection)=>{
    let userId = req.user._id;
-   let {cvId} = req.body
+   let {cvId} = req.params
   try {
     let updatedSection = await cv.findOneAndUpdate(
       {user:userId, _id:cvId},

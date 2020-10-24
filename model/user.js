@@ -72,7 +72,6 @@ userSchema.methods.getAuthToken = async function (){
     const user = this
     userObject = user.toObject()
     delete userObject.password
-    delete userObject.tokens
     return userObject 
   }
 

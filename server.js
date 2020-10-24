@@ -15,21 +15,22 @@ const { user } = require('./model/user')
 const { cv } = require('./model/cv'); 
 
 //https://swagger.io/specification/#infoObject
+   
 const swaggerOptions = {
     definition:{
         openapi: "3.0.1",
         components:{
             securitySchemes: {
-                ApiKeyAuth:{
-                    type: "apiKey",
-                    in: "header",
-                    name: "Authorization"
+                bearerAuth:{
+                    type: "http", 
+                    scheme: "bearer",
+                    bearerFormat: "JWT" 
                   }
             }
         }    ,
         
         security: {
-            ApiKeyAuth: []
+            bearerAuth: []  
         }
         
         },
@@ -76,6 +77,6 @@ app.use('/superadmin', superAdminRoute )
 app.use('/admin', adminRoute)
 
 var port = process.env.port || 3000 ;
-app.listen(3000, () => {
+app.listen(port, () => {
     console.log("the server started ...")
 });

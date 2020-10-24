@@ -1,29 +1,28 @@
-const express = require("express");
+const express = require("express")
+const {check} = require('express-validator')
 const router = express.Router()
 const userController = require('./../controllers/UserController')
-const auth = require('./../middleware/auth')
-const multer =require('multer')
-const path = require('path')
-const helper = require('./../controllers/helper')
-const {hashPassword} = require('./../middleware/hash_password')
-const {check} = require('express-validator')
+const {hasPermission} = require('./../middleware/authorization')
+
 /**
  *  @swagger
  * 
  *  /user/upload/cv:
  *    post:
+ *      security:
+ *        - bearerAuth: []
  *      tags:
  *        - user
  *      description: upload cv pdf file
- *      parameters: 
- *        - in: formdata
- *          name: cv
- *          schema: 
- *             type: file 
- *          required: true 
- *        - in: header 
- *          type: apiKey,
- *          name: Authorization
+ *      requestBody:
+ *        content: 
+ *          multipart/form-data:  
+ *            schema:
+ *              type: object
+ *              properties:
+ *                cv:
+ *                  type: file
+ *                  required: true 
  *      responses:
  *        200:
  *          description: cv uploaded successfuly 
@@ -32,34 +31,28 @@ const {check} = require('express-validator')
  * 
  *     
  */
-router.post('/upload/cv', userController.uploadCv)
+router.post('/upload/cv', hasPermission("uploadCv"), userController.uploadCv)
 
+
+// router.get('/cvfile/:_id', userController.getCv)
 /**
  *  @swagger
  * 
- *  /user/cvfile:
- *    get:
- *      tags:
- *        - user
- *      description: return the pdf file uploaded by user 
- *      responses:
- *        200:
- *          description: pdf file returned
- *        400: 
- *          description: user hasn't upload cv  
- *     
- */
-router.get('/cvfile/:_id', userController.getCv)
-/**
- *  @swagger
- * 
- *  /recommendation:
+ *  /user/{_id}:
  *    patch:
+ *      security:
+ *        - bearerAuth: []
  *      tags:
  *        - user
- *      description: user registration (user, admin)
+ *      description: update user info
  *      consumes:
  *        - application/json
+ *      parameters: 
+ *        - in: path
+ *          name: _id
+ *          schema: 
+ *             type: string 
+ *          required: true 
  *      requestBody:
  *        content: 
  *          application/json:  
@@ -83,7 +76,7 @@ router.get('/cvfile/:_id', userController.getCv)
  *          description: invalid data provided
  */
  
-router.patch('/update/:_id',[
+router.patch('/:_id',  hasPermission("updateUser"),[
     check('firstName').isAlpha().withMessage("enter valid name"),
     check('lastName').isAlpha().withMessage("enter valid name"),
     check('email').isEmail().withMessage("enter valid email"),
@@ -94,8 +87,10 @@ router.patch('/update/:_id',[
 /**
  *  @swagger
  * 
- *  /user/recommendation:
+ *  /user/recommendation/{_id}:
  *    get:
+ *      security:
+ *        - bearerAuth: []
  *      tags:
  *        - user
  *      description: get recommended data by admin
@@ -113,12 +108,14 @@ router.patch('/update/:_id',[
  * 
  *     
  */
-router.get('/recommendation', userController.getRecommendation)
+router.get('/recommendation/:_id', hasPermission("getRecommendation"), userController.getRecommendation)
 /**
  *  @swagger
  * 
- *  /user/cv:
+ *  /user/cv/{_id}:
  *    get:
+ *      security:
+ *        - bearerAuth: []
  *      tags:
  *        - user
  *      description: get user cv  
@@ -136,17 +133,25 @@ router.get('/recommendation', userController.getRecommendation)
  * 
  *     
  */
-router.get('/cv/:_id', userController.getDetailedUserCv)
+router.get('/cv/:_id' , hasPermission("getDetailedUserCv-user"), userController.getDetailedUserCv)
 /**
  *  @swagger
  * 
- *  /recommendation:
+ *  /user/recommendation/{cvId}:
  *    patch:
+ *      security:
+ *        - bearerAuth: []
  *      tags:
  *        - user
- *      description: user registration (user, admin)
+ *      description: edit recommendatins
  *      consumes:
  *        - application/json
+ *      parameters: 
+ *        - in: path
+ *          name: cvId
+ *          schema: 
+ *             type: string 
+ *          required: true 
  *      requestBody:
  *        content: 
  *          application/json:  
@@ -155,18 +160,15 @@ router.get('/cv/:_id', userController.getDetailedUserCv)
  *              properties:
  *                sections:
  *                  type: Array 
- *                cvId:
- *                  type: string
  *              example:
- *                  sections: []
- *                  cvId: "5f8e98dceebdde231804971c"
+ *                  sections: [{"sectionId": "5f7701422006ac70210b2b9e","description": "summary edited by the user"}]
  *      responses:
  *        200:
- *          description:  A JSON object containing array of recommendations (sectionId, description)
+ *          description:  success message
  *        404: 
  *          description: cv not found
  *        400: 
  *          description: invalid cv id format
  */
-router.patch('/recommendation/:cvId', userController.saveAll)
+router.patch('/recommendation/:cvId' , hasPermission("saveAll"), userController.saveAll)
 module.exports = router
