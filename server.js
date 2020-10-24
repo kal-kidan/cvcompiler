@@ -1,4 +1,4 @@
-require('dotenv/config')
+//require('dotenv/config')
 console.log(process.env.TOKEN_KEY);
 const express = require("express");
 const mongoose = require("mongoose");

@@ -29,7 +29,11 @@ spec:
           - name: NODE_ENV
             value: production
           - name: TOKEN_KEY
-            value: "mynode"
+            value: 'mynode'
+          - name: db
+            value: 'cvcompiler'
+          - name: port
+            value: '3000'
         resources:
           limits:
             memory: "500Mi"
