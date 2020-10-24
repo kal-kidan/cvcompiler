@@ -30,8 +30,6 @@ spec:
             value: production
           - name: TOKEN_KEY
             value: "mynode"
-          - name: PORT
-            value: "3000"
         resources:
           limits:
             memory: "500Mi"
