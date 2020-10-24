@@ -1,0 +1,46 @@
+#deploy.yaml
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: cv-comp-api-st
+spec:
+  selector:
+    matchLabels:
+      app: nodejs
+      role: backend
+  replicas: 1
+  template:
+    metadata:
+      name: cv-comp-api-st-deployment
+      labels:
+        app: nodejs
+        role: backend
+        env: develop
+    spec:
+      containers:
+      - name: cv-comp-api-st
+        image: gcr.io/gcr-project/sample:1.0.0
+        env:
+          - name: MONGODB_URL
+            valueFrom:
+              secretKeyRef:
+                name: mongo-secret
+                key: MONGODB_URL
+          - name: NODE_ENV
+            value: production
+          - name: TOKEN_KEY
+            value: "mynode"
+          - name: PORT
+            value: "3000"
+        resources:
+          limits:
+            memory: "500Mi"
+            cpu: "100m"
+        imagePullPolicy: Always
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 3000
+        ports:
+        - name: cv-comp-api-st-port
+          containerPort: 3000
