@@ -66,7 +66,7 @@ auth.unless = unless;
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-//app.use(auth.unless({ path:['/auth/login', '/auth/signup'] }))
+app.use(auth.unless({ path:['/auth/login', '/auth/signup'] }))
 
  
 app.use('/',indexRoute) 
