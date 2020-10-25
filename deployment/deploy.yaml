@@ -1,4 +1,3 @@
-#deploy.yaml
 kind: Deployment
 apiVersion: extensions/v1beta1
 metadata:
@@ -34,6 +33,8 @@ spec:
             value: 'cvcompiler'
           - name: port
             value: '3000'
+          - name: SECRET_KEY
+            value: 'vcpiler'
         resources:
           limits:
             memory: "500Mi"
