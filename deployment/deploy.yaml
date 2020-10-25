@@ -42,7 +42,7 @@ spec:
         imagePullPolicy: Always
         readinessProbe:
           httpGet:
-            path: /user
+            path: /
             port: 3000
           initialDelaySeconds: 20
         ports:
