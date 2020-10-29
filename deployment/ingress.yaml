@@ -1,0 +1,16 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: cv-comp-api-st-ingress
+spec:
+  backend:
+    serviceName: cv-comp-api-st-service
+    servicePort: 3000
+  rules:
+  - host: stg.cvcomp.et6bw.gebeya.co
+    http:
+      paths:
+      - backend:
+          serviceName: cv-comp-api-st-service
+          servicePort: 3000
+        path: /

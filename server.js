@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 require('dotenv/config')
+=======
+//require('dotenv/config')
+console.log(process.env.TOKEN_KEY);
+>>>>>>> 6a1de078e8ae8c003b3ee4ad0efd3df26c75a59e
 const express = require("express");
 const mongoose = require("mongoose");
 const mongoSanitize = require('express-mongo-sanitize')
