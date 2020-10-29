@@ -1,7 +1,9 @@
 const express = require("express");
 const router = express.Router()
-const authController = require('./../controllers/AuthController')
+const {hasPermission} = require('./../../middleware/authorization')
+const authController = require('./../../controllers/AuthController')
 const {check} = require('express-validator')
+const validate = require('./../../middleware/form-validator')
 /**
  *  @swagger
  * 
@@ -62,14 +64,7 @@ const {check} = require('express-validator')
  *     
  */
 
-router.post('/signup', [
-    check('firstName').isAlpha().withMessage("enter valid name"),
-    check('lastName').isAlpha().withMessage("enter valid name"),
-    check('email').isEmail().withMessage("enter valid email"),
-    check('phoneNumber').not().isEmpty().withMessage("enter valid phone number"),
-    check('password').isLength({min: 6}).withMessage("enter valid password"),
-    check('role').isAlpha().withMessage("enter valid role"),
-],authController.register)
+router.post('/signup',  validate.signUp,authController.register)
 
 
 /**
@@ -126,9 +121,6 @@ router.post('/signup', [
  *  
  *     
  */
-router.post('/login',[
-    check('email').not().isEmpty().withMessage("enter email"),
-    check('password').not().isEmpty().withMessage("enter password"),
-], authController.login)
+router.post('/login', validate.logIn, authController.login)
 
 module.exports = router

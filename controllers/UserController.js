@@ -9,7 +9,7 @@ const { user } = require("./../model/user");
 const { cv } = require("./../model/cv"); 
 const { section } = require("./../model/section"); 
 const helper = require("./helper");
-// const { start } = require("repl");
+
 
 const uploadCv = async (req, res) => {
   const storage = multer.diskStorage({
@@ -172,14 +172,6 @@ async function sectionCv(fileName){
       )   
   })
   return uploadedSection
-  
- 
-  // .catch(()=>{
-  //   res.status(400).send({
-  //     error: true,
-  //     msg: error.message
-  //   })
-  // })
 
 }
 
@@ -307,57 +299,60 @@ const updateUser = async (req, res) => {
  
    
 };
+const isCvFound= async (userId, cvId)=>{
+  try {
+    let userCv = await cv.findOne({user:userId, _id:cvId});
+    if(! userCv ){
+       return false
+    }
+       return true
+  } catch (error) {
+      throw error
+  }
+}
 
 const saveAll = async (req,res)=>{
 
   const cvSections = req.body.sections
   const {cvId} = req.params
-  try {
-    let userCv = await cv.findOne({user:req.user._id, _id:cvId});
-    if(! userCv ){
-      return res.status(404).send({
+  if(!isCvFound(req.user._id, cvId)){
+    return res.status(404).send({
         error: true,
-        msg: "user cv is not found"
+        msg: "cv not found"
     })
-    }
-    
+  }
+     
+ try {
   for(let i=0; i<cvSections.length; i++){
     let {sectionId} = cvSections[i]
     let {description} = cvSections[i]
     let editedSection ={sectionId,description}
+  
     let query = {
       'editedSections.sectionId': sectionId 
       };
-      cv.findOne(query).then(async (doc) =>  {
-        if(doc){
-          updateEditedSection(req,res,doc,cvSections[i])
-        }
-        else {
-          addEdittedRecommendation(req,res,editedSection)
-        }
-       
-    }).catch(err => {
-      console.log(err)
-       return res.status(500).send({
-            error: true,
-            msg: err.messsage
-        })
-        
-        
-    });
-  
-} 
-return res.send({
-  status: true,
-  msg: "you have successfully edited admin recommendation" 
+      const doc = await cv.findOne(query)
+      if(doc){
+        updateEditedSection(req,res,doc,cvSections[i])
+      }
+      else{
+        addEdittedRecommendation(req,res,editedSection) 
+     }       
+  } 
 
-})
-  } catch (error) {
-    return res.status(400).send(
-      {error:true,
-      msg: error.message}
-    )
-  }
+  return res.send({
+    status: true,
+    msg: "you have successfully edited admin recommendation" 
+  
+  })
+ } catch (error) {
+      return res.status(500).send({
+        error: true,
+        msg: error.messsage
+    })
+ }
+
+   
 
   }
 
@@ -373,11 +368,7 @@ const updateEditedSection  = async (req, res, doc,cvSection) =>{
     section["updatedAt"] = Date.now()
     await doc.save();
   } catch (error) {
-    console.log("from update edited section",error)
-   return res.status(500).send({
-      error: true,
-      msg: error.messsage
-  })
+   throw error
   }
 }
 
@@ -393,11 +384,7 @@ const updateEditedSection  = async (req, res, doc,cvSection) =>{
       }
       )
    } catch (error) {
-    console.log("from add edited section",error)
-    return res.status(500).send({
-      error: true,
-      msg: error.messsage
-  })
+       throw error
    }
 
  }
@@ -509,7 +496,7 @@ function getLatestUpdate(datas){
    
    return updatedAt
 }
-module.exports = {
+module.exports = { 
   uploadCv,
   updateUser,
   getCv,

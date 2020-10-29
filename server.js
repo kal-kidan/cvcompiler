@@ -1,14 +1,33 @@
 require('dotenv/config')
-console.log(process.env.TOKEN_KEY);
 const express = require("express");
 const mongoose = require("mongoose");
+const mongoSanitize = require('express-mongo-sanitize')
+const helmet = require('helmet')
+const xxsClean = require('xss-clean')
+const hpp = require('hpp')
 const swaggerJSDoc = require('swagger-jsdoc')
 const swaggerUI = require('swagger-ui-express')
-
 const cors = require('cors');
 const bodyParser = require('body-parser')
-const app = express(); 
 const unless = require('express-unless');
+const app = express(); 
+
+
+
+//security
+const rateLimiter = require('express-rate-limit')
+const limiter = rateLimiter(
+    {
+        windowMs:10*60*60,
+        max:10
+    }
+)
+
+app.use(helmet())
+app.use(xxsClean())
+app.use(limiter)
+app.use(hpp())
+app.use(mongoSanitize())
 
 //models
 const { user } = require('./model/user')
@@ -55,28 +74,24 @@ const swaggerDoc = swaggerJSDoc(
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDoc))
 
 //routes
-const authRoute = require('./routes/auth')
-const userRoute = require('./routes/user')
-const superAdminRoute = require('./routes/SuperAdmin')
-const adminRoute = require('./routes/admin')
-const indexRoute = require('./routes/index')
-const auth = require('./middleware/auth')
-auth.unless = unless;
+const v1Router = require('./routes/v1.router')
 
 //middlewares
+const auth = require('./middleware/auth')
+auth.unless = unless;
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(auth.unless({ path:['/auth/login', '/auth/signup'] }))
+app.use(auth.unless({ path:['/v1/auth/login', '/v1/auth/signup'] }))
 
- 
-app.use('/',indexRoute) 
-app.use('/auth',authRoute) 
-app.use('/user', userRoute)
-app.use('/superadmin', superAdminRoute )
-app.use('/admin', adminRoute)
+ app.use('/v1', v1Router)
+
+//Capture All 404 errors
+app.use(function (req,res,next){
+	res.status(404).send('Unable to find the requested resource!');
+});
 
 var port = process.env.port || 3000 ;
 app.listen(port, () => {
-    console.log("the server started ...")
+    console.log(`the server is listening on port ${port} ..`)
 });

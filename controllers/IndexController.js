@@ -1,6 +1,10 @@
 const { user } = require("./../model/user");
 const { cv } = require("./../model/cv"); 
 const { section } = require("./../model/section"); 
+
+const me = async (req, res) => {
+    res.send({user: req.user})
+}
 const getSections = async (req, res)=>{ 
     try {
       let sections = await section.find({})
@@ -14,5 +18,5 @@ const getSections = async (req, res)=>{
 }
 
 module.exports = {
-    getSections
+    me, getSections
 }

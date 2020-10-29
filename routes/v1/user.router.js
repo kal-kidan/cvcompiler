@@ -1,8 +1,8 @@
 const express = require("express")
 const {check} = require('express-validator')
 const router = express.Router()
-const userController = require('./../controllers/UserController')
-const {hasPermission} = require('./../middleware/authorization')
+const {hasPermission} = require('./../../middleware/authorization')
+const userController = require('./../../controllers/UserController')
 
 /**
  *  @swagger

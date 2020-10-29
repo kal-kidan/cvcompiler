@@ -1,10 +1,12 @@
 const express = require('express')
-const router = express.Router()
-const auth = require('../middleware/auth')
-const superAdminController = require('./../controllers/SuperAdminController')
+const router = express.Router() 
 const {check} = require('express-validator')
-const {hasPermission} = require('./../middleware/authorization')
+
+const {hasPermission} = require('./../../middleware/authorization')
+const superAdminController = require('./../../controllers/SuperAdminController')
+
 router.get('/admins', hasPermission('getAdmin'),superAdminController.getAdmin)
+
 router.delete('/admin/:adminId',hasPermission('deleteAdmin'), superAdminController.deleteAdmin)
 
 router.post('/admin/register', hasPermission('registerAdmin'), [
