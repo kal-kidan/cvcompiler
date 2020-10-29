@@ -3,7 +3,8 @@ const {check} = require('express-validator')
 const router = express.Router()
 const {hasPermission} = require('./../../middleware/authorization')
 const userController = require('./../../controllers/UserController')
-
+const CvHistoryController = require('./../../controllers/CvHistoryController')
+const { CvHistory } = require("../../model/cvhistory")
 /**
  *  @swagger
  * 
@@ -31,7 +32,7 @@ const userController = require('./../../controllers/UserController')
  * 
  *     
  */
-router.post('/upload/cv', hasPermission("uploadCv"), userController.uploadCv)
+router.post('/cvsections', hasPermission("uploadCv"), userController.addCv)
 
 
 // router.get('/cvfile/:_id', userController.getCv)
@@ -170,5 +171,12 @@ router.get('/cv/:_id' , hasPermission("getDetailedUserCv-user"), userController.
  *        400: 
  *          description: invalid cv id format
  */
-router.patch('/recommendation/:cvId' , hasPermission("saveAll"), userController.saveAll)
+router.post('/cv/:cvId' , hasPermission("saveAll"), userController.saveAll)
+
+router.get('/cvhistory/:historyId', CvHistoryController.getCvHistory)
+router.get('/cvhistorys/:cvId', CvHistoryController.getCvHistorys)
+router.delete('/cvhistory/:historyId', CvHistoryController.deleteCvHistory)
+router.post('/cvhistory', CvHistoryController.addHistory)
+
+
 module.exports = router

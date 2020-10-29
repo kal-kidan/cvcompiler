@@ -12,16 +12,15 @@ const cvHistorySchema = mongoose.Schema(
             ref: 'users', 
             required: true
         },
-        adminId:{
+        admin:{
             type: mongoose.Schema.Types.ObjectId,
             ref: 'users',
             required: true 
         },
         version:{
-            type: String,
-            default: 'new'
+            type: Number,
           },
-        uploadedSection:[
+          editedSections:[
             {
                 sectionId:{
                     type: mongoose.Schema.Types.ObjectId,
@@ -48,9 +47,9 @@ const cvHistorySchema = mongoose.Schema(
         timestamps: true
     } 
 )
-
- 
+autoIncrement.initialize(mongoose);
+cvHistorySchema.plugin(autoIncrement.plugin, { model: 'CvHistory', field: 'version', startAt: 1,incrementBy: 1});
 const CvHistory = mongoose.model('cvhistory',cvHistorySchema);
-cvHistorySchema.plugin(autoIncrement.plugin, { model: 'CvHistory', field: 'version' });
+
 module.exports = {CvHistory};
  

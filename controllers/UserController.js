@@ -181,7 +181,7 @@ async function sectionCv(fileName){
 
 async function assignCv(req,res, adminId){
   
-   const updatedAdmin = await user.findOneAndUpdate({ _id: adminId}, { $inc: { assignedCv: 1 } }, {new: true } )
+   const updatedAdmin = await user.findOneAndUpdate({ _id: adminId}, { $inc: { assignedCv: 1 } }, {new: true, useFindAndModify: false } )
     if( !updatedAdmin ){
       return false
     }
@@ -402,7 +402,6 @@ const updateRecommendation = async (req, res)=>{
       };
       cv.findOne(query).then(async (doc) =>  {
           if(!doc){
-            console.log(editedSection)
             let updatedSection = await cv.findOneAndUpdate(
               {user:userId,_id:cvId},
               {
@@ -441,11 +440,10 @@ const updateRecommendation = async (req, res)=>{
               error: true,
               msg: err.messsage
           })
-          console.log(err)
+          
       });
     
   } catch (error) {
-      console.log(error)
       res.status(500).send({
           error: true,
           msg: error.messsage
@@ -496,6 +494,44 @@ function getLatestUpdate(datas){
    
    return updatedAt
 }
+
+const addCv = async (req, res)=>{
+  const uploadedSection = req.body.sections
+  try {
+    let admin = await user.findOne({role: "admin"}, null, { 
+      skip:0, 
+      limit:1, 
+        sort:{
+      assignedCv: 1
+    } 
+  })
+ 
+  if (!admin) return res.status(500).send({error:true, msg: "there is no registered admin"})
+  const cvData = await cv.create({uploadedSection, user: req.user._id, admin: admin._id})
+  if (cvData) { 
+    const bool = await assignCv(req,res, admin._id) 
+    if(bool){
+      return res.send({
+        data: {
+          status: true,
+          msg: "cv sections uploaded sucessfully",
+          uploadData: cvData,
+        },
+      });
+      
+    }
+  }
+  } catch (error) {
+    if (error.keyValue) {
+      if (error.keyValue.user) { 
+        return res.status(400).send({error:true, msg: 'you have already added sections'}); 
+      }
+    }
+    return res.status(500).send({error:true, msg: error.message})
+  }
+}
+
+
 module.exports = { 
   uploadCv,
   updateUser,
@@ -504,5 +540,6 @@ module.exports = {
   updateRecommendation,
   getUserCv,
   saveAll,
-  getDetailedUserCv
+  getDetailedUserCv,
+  addCv
 };

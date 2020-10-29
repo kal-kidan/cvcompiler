@@ -3,17 +3,14 @@ const {user} = require('./user');
  
 const cvSchema = mongoose.Schema(
     {
-        path: {
-            type: String,
-            required: true
-        },
+     
         user: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'users',
             unique: true,
             required: true
         },
-        adminId:{
+        admin:{
             type: mongoose.Schema.Types.ObjectId,
             ref: 'users' 
         },
@@ -30,7 +27,7 @@ const cvSchema = mongoose.Schema(
                     required: true
                 } ,
                  description:{
-                   type: String, 
+                  
                  },
                  createdAt:{
                     type: Date,
