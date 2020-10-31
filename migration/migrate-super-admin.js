@@ -11,7 +11,7 @@ const superAdminData = {
 
 const superAdmin = new user(
     superAdminData
-)
+);
 
 superAdmin.save((err, result)=>{
         if(err){

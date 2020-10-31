@@ -32,4 +32,4 @@ async function insertSections(){
         return console.log(error.message);
     }
 }
-insertSections()
+insertSections();
