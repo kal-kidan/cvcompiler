@@ -4,181 +4,14 @@ const bcrypt = require('bcryptjs');
 const fs = require('fs')
 const { validationResult } = require('express-validator')
 const pdfparse = require('pdf-parse')
+const formValidator = require('./../middleware/form-validator')
 
 const { user } = require("./../model/user");
 const { cv } = require("./../model/cv"); 
 const { section } = require("./../model/section"); 
 const helper = require("./helper");
 
-
-const uploadCv = async (req, res) => {
-  const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-      cb(null, "uploads/cvs");
-    },
-    filename: helper.renameFile 
-  });
-  const upload = multer({
-    storage: storage,
-    limits: { fileSize: 1024*1024*3 },
-    fileFilter: helper.validateExtension 
-  }).single("cv");
-
-  upload(req, res, function(err) {
-   validateAndUploadFile(req,res,err);  
-});
-  
-};
-
-function validateAndUploadFile(req,res,err){
-     
-    if (req.fileValidationError) {
-        return res.status(400).send({
-            errors:{
-                msg:req.fileValidationError
-            }
-        });
-    }
-
-    else if (err instanceof multer.MulterError) {
-      if(err.code == "LIMIT_FILE_SIZE"){
-        return res.status(400).send(
-          {
-            errors:{msg: "the file is too large"}
-          }
-        );
-      }
-        return res.status(500).send(err);
-    }
-    else if (err) {
-        return res.status(500).send(err);
-    }
-    else if (!req.file) {
-      return res.status(400).send({
-          errors:{
-              msg:'please enter file'
-          }
-      });
-      
-  }
-    else{
-     
-     saveCv(req,res)
-    }
-}
-
-async function saveCv(req, res) {
-  let uploadedSection = await sectionCv(req.fileName) 
-  var userId = req.user._id;
-  var { path } = req.file;
-  let admin = await user.find({role: "admin"}, null, { 
-    skip:0, 
-    limit:1, 
-      sort:{
-    assignedCv: 1
-  } 
-})
-if(admin.length === 0){
-  return res.send(
-   {
-     error:{
-       error: true,
-       msg: "there is no any admin in the database"
-     }
-   }
-  )
-}
-  admin = admin[0] 
-  const adminId = admin._id
-
-  var newCv = new cv({ path, user:userId, adminId, uploadedSection });
-  try {
-    const data = await newCv.save(); 
-    if (data) { 
-      const bool = await assignCv(req,res, adminId) 
-      if(bool){
-        res.send({
-          data: {
-            status: true,
-            msg: "file uploaded sucessfully",
-            uploadData: data,
-          },
-        });
-        return;
-      }
-      res.status(500).send({error:{msg: "can not add the cv"}})
-   
-    }
-  } catch (error) { 
-    if (error.keyValue) {
-      if (error.keyValue.user) {
-        let uploadError  = {} 
-        uploadError.msg = 'you already uploaded a cv'
-        uploadError.param = 'user'
-        uploadError.value = req.user._id
-        uploadError.location = 'body' 
-        res.status(400).send({errors: uploadError}); 
-      }
-      else{
-        res.status(500).send(error)
-      }
-    }
-   
-  }
-}
-
  
-async function sectionCv(fileName){
-  let fullPath =  path.resolve(__dirname+`/../uploads/cvs/${fileName}` )
-  const file = fs.readFileSync(fullPath)
-  let data = await pdfparse(file)
-  let sections = await section.find({})
-  let {text} = data 
-  text = text.toString()
-  text = text.trim()
-  let cvSections = []
-  sections.forEach((section, index)=>{
-    let Section = section.name + " \n"
-    var regex = new RegExp( `${Section}`  , "ig")
-    let start = text.search(regex) 
-    cvSections.push({start, name:section.name, _id: section._id}) 
-  })
-   
-  // extract description for each of the section from the user cv
-  let uploadedSection = []
-  cvSections = cvSections.sort(function(a, b){return  a.start - b.start })
-
-  cvSections.forEach((cvsection,index)=>{
-    let description
-    let start
-    let end
-    if(index===cvSections.length-1){
-       start = cvSections[index].start + cvsection.name.length
-      description = text.substring(start)
-    
-    }
-    else{
-       start = cvSections[index].start + cvsection.name.length
-       end =  cvSections[index+1].start 
-      description = text.substring(start, end) 
-    }
-    description = description.replace("\n", "")
-      uploadedSection.push(
-        {
-          sectionId: cvsection._id,
-          description
-
-        }
-      )   
-  })
-  return uploadedSection
-
-}
-
- 
-
-
-
 async function assignCv(req,res, adminId){
   
    const updatedAdmin = await user.findOneAndUpdate({ _id: adminId}, { $inc: { assignedCv: 1 } }, {new: true, useFindAndModify: false } )
@@ -486,6 +319,8 @@ const getDetailedUserCv = async (req, res) => {
   })
 
 }
+
+// get the most recent update time
 function getLatestUpdate(datas){
   let updatedAt = '';
   datas.forEach((data, index)=>{
@@ -495,6 +330,7 @@ function getLatestUpdate(datas){
    return updatedAt
 }
 
+// add cv from a form
 const addCv = async (req, res)=>{
   const uploadedSection = req.body.sections
   try {
@@ -532,8 +368,7 @@ const addCv = async (req, res)=>{
 }
 
 
-module.exports = { 
-  uploadCv,
+module.exports = {  
   updateUser,
   getCv,
   getRecommendation,

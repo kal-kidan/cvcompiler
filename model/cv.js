@@ -27,7 +27,7 @@ const cvSchema = mongoose.Schema(
                     required: true
                 } ,
                  description:{
-                  
+                   type: Object, 
                  },
                  createdAt:{
                     type: Date,
@@ -50,8 +50,7 @@ const cvSchema = mongoose.Schema(
                     required: true
                 } ,
                  description:{
-                   type: String, 
-                   required: true
+                    type: Object
                  },
                  createdAt:{
                     type: Date,
@@ -72,7 +71,7 @@ const cvSchema = mongoose.Schema(
                     required: true
                 } ,
                  description:{
-                   type: String, 
+                   type: Object, 
                  },
                  createdAt:{
                     type: Date,

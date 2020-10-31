@@ -1,5 +1,6 @@
 const mongoose = require('./../lib/db-connect');
 const autoIncrement = require('mongoose-auto-increment');
+const { object } = require('joi');
 const cvHistorySchema = mongoose.Schema(
     {
         cvId: {
@@ -20,28 +21,25 @@ const cvHistorySchema = mongoose.Schema(
         version:{
             type: Number,
           },
-          editedSections:[
-            {
-                sectionId:{
-                    type: mongoose.Schema.Types.ObjectId,
-                    ref: 'sections',
-                    unique:true,
-                    required: true
-                } ,
-                 description:{
-                   type: String, 
-                 },
-                 createdAt:{
-                    type: Date,
-                    default: Date.now()
-                },
-                updatedAt:{
-                    type: Date,
-                    default: Date.now()
-                }
+          sections: {
+            sectionId:{
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'sections',
+                unique:true,
+                required: true
+            } ,
+             description:{
+               type: Object, 
+             },
+             createdAt:{
+                type: Date,
+                default: Date.now()
+            },
+            updatedAt:{
+                type: Date,
+                default: Date.now()
             }
-            
-        ] ,
+          }
     },
     {
         timestamps: true

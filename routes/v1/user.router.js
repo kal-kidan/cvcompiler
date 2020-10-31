@@ -5,10 +5,11 @@ const {hasPermission} = require('./../../middleware/authorization')
 const userController = require('./../../controllers/UserController')
 const CvHistoryController = require('./../../controllers/CvHistoryController')
 const { CvHistory } = require("../../model/cvhistory")
+const {validateSchema} = require('./../../middleware/section-validator')
 /**
  *  @swagger
  * 
- *  /user/upload/cv:
+ *  /user/cvsections:
  *    post:
  *      security:
  *        - bearerAuth: []
@@ -32,7 +33,8 @@ const { CvHistory } = require("../../model/cvhistory")
  * 
  *     
  */
-router.post('/cvsections', hasPermission("uploadCv"), userController.addCv)
+
+router.post('/cvsections', hasPermission("uploadCv"), validateSchema, userController.addCv)
 
 
 // router.get('/cvfile/:_id', userController.getCv)
@@ -176,7 +178,7 @@ router.post('/cv/:cvId' , hasPermission("saveAll"), userController.saveAll)
 router.get('/cvhistory/:historyId', CvHistoryController.getCvHistory)
 router.get('/cvhistorys/:cvId', CvHistoryController.getCvHistorys)
 router.delete('/cvhistory/:historyId', CvHistoryController.deleteCvHistory)
-router.post('/cvhistory', CvHistoryController.addHistory)
+router.post('/cvhistory', validateSchema, CvHistoryController.addHistory)
 
 
 module.exports = router
