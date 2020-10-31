@@ -10,7 +10,7 @@ const validateSchema = async (req, res, next)=>{
       const achievement = sections.filter((item)=> item.name.toLowerCase() === "achievement" )[0]
       const work = sections.filter((item)=> item.name.toLowerCase() === "work" )[0]
       const personalInfo = sections.filter((item)=> item.name.toLowerCase() === "personalinfo" )[0]
-      const skill = sections.filter((item)=> item.name.toLowerCase() === "skill" )[0]
+      const skill = sections.filter((item)=> item.name.toLowerCase() === "skills" )[0]
       if( !(education && achievement && work && personalInfo && skill) ){
         throw new Error("invalid data")
       }

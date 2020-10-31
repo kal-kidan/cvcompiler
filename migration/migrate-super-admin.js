@@ -1,5 +1,5 @@
-const mongoose = require('./../lib/db-connect');
-const {user} = require('./../model/user')
+const mongoose = require('../lib/db-connect');
+const {user} = require('../model/user')
 const superAdminData = {
     firstName: "super",
     lastName: "admin",
