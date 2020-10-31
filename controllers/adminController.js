@@ -25,14 +25,21 @@ const getCv = async (req, res)=>{
         })
     } 
 }
-
+const isAdminFound = async (cvId, adminId) =>{
+  const Cv  = await cv.findOne({_id: cvId, admin: adminId})
+  if(!Cv){
+      return false
+  }
+  return true
+}
 const addAllRecommendation = async (req, res)=>{
     let {recommendations} = req.body
     let cvId = req.params._id 
     let adminId = req.user._id
- 
+    
     try {
-        if(!isAdminFound(cvId, adminId)){
+        const bool = await isAdminFound(cvId, adminId)
+        if(!bool){
             return res.status(404).send({
                 error: true,
                 msg: "cv not found"
@@ -70,13 +77,13 @@ const addRecommendation = async (req, res,recommendation, cvId)=>{
     try {
         let adminId = req.user._id
         await cv.updateOne(
-            {_id:cvId,adminId },
+            {_id:cvId, admin: adminId },
             { $addToSet: {recommendation} }, 
                 )
         let updatedCv = await  cv.findOneAndUpdate({_id:cvId}, {status: "onprogress"}, {new: true})
 
     } catch (error) {
-       throw error
+     throw error
     }
         
 }

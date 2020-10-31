@@ -4,8 +4,8 @@ const router = express.Router()
 const {hasPermission} = require('./../../middleware/authorization')
 const userController = require('./../../controllers/UserController')
 const CvHistoryController = require('./../../controllers/CvHistoryController')
-const { CvHistory } = require("../../model/cvhistory")
 const {validateSchema} = require('./../../middleware/section-validator')
+const validateSection = require('./../../middleware/validate-section')
 /**
  *  @swagger
  * 
@@ -173,7 +173,8 @@ router.get('/cv/:_id' , hasPermission("getDetailedUserCv-user"), userController.
  *        400: 
  *          description: invalid cv id format
  */
-router.post('/cv/:cvId' , hasPermission("saveAll"), userController.saveAll)
+
+router.post('/cv/:cvId' ,validateSection("sections"), hasPermission("saveAll"), userController.saveAll)
 
 router.get('/cvhistory/:historyId', CvHistoryController.getCvHistory)
 router.get('/cvhistorys/:cvId', CvHistoryController.getCvHistorys)
