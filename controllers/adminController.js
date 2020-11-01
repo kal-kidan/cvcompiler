@@ -8,7 +8,7 @@ const getCv = async (req, res)=>{
     let {status} = req.params
     if(status === "onprogress" || status === "new" || status === "sent"){
         try {
-            const cvsAssigned = await cv.find({status,adminId}).select('_id user createdAt updatedAt').populate('user')
+            const cvsAssigned = await cv.find({status,admin: adminId}).select('_id user createdAt updatedAt').populate('user')
             res.send(cvsAssigned)
        
         } catch (error) {

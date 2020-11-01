@@ -198,10 +198,13 @@ const updateEditedSection  = async (req, res, doc,cvSection) =>{
     let sectionToEdit =  doc.uploadedSection.find(section=> section.sectionId == sectionId)
     let _id = sectionToEdit._id
     let section = doc.uploadedSection.id(_id)
-    console.log(section);
-    section["description"] = description
-    section["updatedAt"] = Date.now()
+    if(section){
+      console.log(section);
+      section["description"] = description
+      section["updatedAt"] = Date.now()
     await doc.save();
+    }
+    
   } catch (error) {
    throw error
   }
