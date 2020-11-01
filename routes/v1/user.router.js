@@ -4,6 +4,7 @@ const router = express.Router()
 const {hasPermission} = require('./../../middleware/authorization')
 const userController = require('./../../controllers/UserController')
 const CvHistoryController = require('./../../controllers/CvHistoryController')
+const CvController = require('./../../controllers/CvController')
 const {validateSchema} = require('./../../middleware/section-validator')
 const validateSection = require('./../../middleware/validate-section')
 /**
@@ -85,7 +86,7 @@ router.patch('/:_id',  hasPermission("updateUser"),[
     check('email').isEmail().withMessage("enter valid email"),
     check('phoneNumber').not().isEmpty().withMessage("enter valid phone number"),
     check('password').isLength({min: 6}).withMessage("enter valid password") 
-], userController.updateUser)
+], userController.updateUser);
 
 /**
  *  @swagger
@@ -175,7 +176,7 @@ router.get('/cv/:_id' , hasPermission("getDetailedUserCv-user"), userController.
  */
 
 router.post('/cv/:cvId' ,validateSection("sections"), hasPermission("saveAll"), userController.saveAll)
-
+router.patch('/cv/profileimage', CvController.uploadImage)
 router.get('/cvhistory/:historyId', CvHistoryController.getCvHistory)
 router.get('/cvhistorys/:cvId', CvHistoryController.getCvHistorys)
 router.delete('/cvhistory/:historyId', CvHistoryController.deleteCvHistory)
