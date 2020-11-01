@@ -38,6 +38,22 @@ const uploadImage = async (req, res) => {
     
   };
 
+  const isCvUploaded = async (req, res)=>{
+      const uploadedCv = await cv.findOne({user: req.user._id})
+      if(uploadedCv){
+         return res.json({
+              status: true,
+              msg: "user has uploaded cv"
+          })
+      }
+      return res.json({
+        status: false,
+        msg: "user hasn't uploaded cv"
+    })
+
+  }
+
   module.exports = {
-      uploadImage
+      uploadImage,
+      isCvUploaded
   }

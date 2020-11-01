@@ -80,7 +80,7 @@ router.post('/cvsections', hasPermission("uploadCv"), validateSchema, userContro
  *          description: invalid data provided
  */
  
-router.patch('/:_id',  hasPermission("updateUser"),[
+router.patch('/data/:_id',  hasPermission("updateUser"),[
     check('firstName').isAlpha().withMessage("enter valid name"),
     check('lastName').isAlpha().withMessage("enter valid name"),
     check('email').isEmail().withMessage("enter valid email"),
@@ -181,6 +181,6 @@ router.get('/cvhistory/:historyId', CvHistoryController.getCvHistory)
 router.get('/cvhistorys/:cvId', CvHistoryController.getCvHistorys)
 router.delete('/cvhistory/:historyId', CvHistoryController.deleteCvHistory)
 router.post('/cvhistory', validateSchema, CvHistoryController.addHistory)
-
+router.get('/iscvuploaded',CvController.isCvUploaded)
 
 module.exports = router
