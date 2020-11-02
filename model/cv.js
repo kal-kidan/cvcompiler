@@ -29,6 +29,10 @@ const cvSchema = mongoose.Schema(
                     unique:true,
                     required: true
                 } ,
+                name: {
+                    type: String,
+                    required: true
+                },
                  description:{
                    type: Object, 
                  },
@@ -52,6 +56,10 @@ const cvSchema = mongoose.Schema(
                     unique:true,
                     required: true
                 } ,
+                name: {
+                    type: String,
+                    required: true
+                },
                  description:{
                     type: Object
                  },
@@ -65,27 +73,7 @@ const cvSchema = mongoose.Schema(
                 }
             } 
            ],
-           editedSections:[
-            {
-                sectionId:{
-                    type: mongoose.Schema.Types.ObjectId,
-                    ref: 'sections',
-                    unique:true,
-                    required: true
-                } ,
-                 description:{
-                   type: Object, 
-                 },
-                 createdAt:{
-                    type: Date,
-                    default: Date.now()
-                },
-                updatedAt:{
-                    type: Date,
-                    default: Date.now()
-                }
-            } 
-        ],
+           
     } ,
     {
         timestamps: true

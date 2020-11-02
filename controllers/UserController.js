@@ -298,27 +298,34 @@ const getDetailedUserCv = async (req, res) => {
   }
   let sections = []
   const {recommendation} = userCv
-  const {uploadedSection} = userCv
-  const {editedSections} = userCv
+  const uploadedSections = userCv.uploadedSection
   const {createdAt} = userCv
   const {updatedAt} = userCv
   const dbsections = await section.find({}).select('_id name category')
-   uploadedSection.forEach((uploadedSection, index)=>{
-    let sectionId = uploadedSection.sectionId
-    let section = dbsections[index]
-       if(!recommendation[index]){
-          sections.push({sectionId, section,name: section.name, uploaded: uploadedSection.description, recommended: [], editedSection: editedSections[index].description})
+
+ 
+ 
+  dbsections.forEach((section, index)=>{
+     let sectionId = section._id
+        let uploadedSection = uploadedSections[index]
+        let recommendationIsFound = false;
+       for(let rc of recommendation){
+         if(rc.name == section.name){
+              sections.push({sectionId, section,name: section.name, uploaded: uploadedSection.description, recommended: rc.description})
+              recommendationIsFound=true
+            }
+          
+         }
+         if(!recommendationIsFound){
+          sections.push({sectionId, section,name: section.name, uploaded: uploadedSection.description, recommended: [] })
+          recommendationIsFound=false
        }
-       if(!editedSections[index]){
-        editedSections[index] = {description:'', updatedAt: ''}
-        sections.push({sectionId, section,name: section.name, uploaded: uploadedSection.description, recommended: recommendation[index].description, editedSection: editedSections[index].description})
-     }
-      
-      
-   })
+ 
+  })
+  
   res.send({
       sections,
-      userSectionUpdatedAt: getLatestUpdate(editedSections),
+      userSectionUpdatedAt: getLatestUpdate(uploadedSections),
       cvCreatedAt: createdAt,
       cvUpdatedAt: updatedAt 
   })

@@ -139,21 +139,29 @@ const getUserCv = async (req, res) => {
     }
     let sections = []
     const {recommendation} = userCv
-    const {uploadedSection} = userCv
+    const uploadedSections = userCv.uploadedSection
     const dbsections = await section.find({}).select('_id name category')
     const updatedAt =userCv.updatedAt;
     const createdAt =userCv.createdAt;
-     uploadedSection.forEach((uploadedSection, index)=>{
-        let sectionId = uploadedSection.sectionId
-        let section = dbsections[index]
-         if(!recommendation[index]){
-            sections.push({sectionId, name: section.name, section,uploaded: uploadedSection.description, recommended: [], updatedAt: '' })
-         }
-         else{    
-            sections.push({sectionId, name: section.name, section,uploaded: uploadedSection.description, recommended: recommendation[index].description, updatedAt: recommendation[index].updatedAt })
-         }
-        
+    dbsections.forEach((section, index)=>{
+        let sectionId = section._id
+           let uploadedSection = uploadedSections[index]
+           let recommendationIsFound = false;
+          for(let rc of recommendation){
+            if(rc.name == section.name){
+                 sections.push({sectionId, section,name: section.name, uploaded: uploadedSection.description, recommended: rc.description})
+                 recommendationIsFound=true
+               }
+             
+            }
+            if(!recommendationIsFound){
+             sections.push({sectionId, section,name: section.name, uploaded: uploadedSection.description, recommended: [] })
+             recommendationIsFound=false
+          }
+    
      })
+     
+    
     res.send({
         sections,
         adminRecommendationUpdatedAt: getLatestUpdate(recommendation),

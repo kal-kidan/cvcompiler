@@ -12,7 +12,7 @@ async function insertSections(){
             category: "cv"
         },
         {
-            name: "personal_info",
+            name: "personalInfo",
             category: "cv"
         },
         
