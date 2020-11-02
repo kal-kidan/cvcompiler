@@ -1,3 +1,4 @@
+const nodemailer = require('nodemailer')
 const { user } = require('../model/user')
 const { cv } = require('../model/cv') 
 const { section } = require('../model/section') 
@@ -181,11 +182,57 @@ const getUserCv = async (req, res) => {
 
 
   const sendEmail = async (req, res)=>{
-      
-  }
+        try {
+            let {userId} = req.body
+            if(!userId){
+                return res.status(400).json( { error: true,  msg: "enter user id"} )
+            }
+            let User = await user.findOne({_id: userId})
+            var transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    user: 'kalkidant05@gmail.com',
+                    pass: 't05kalkidan'
+                },
+                connectionTimeout: 20000
+            })
+            
+            const mailOptions = {
+                from: 'kalkidant05@gmail.com',
+                to: `${User.email}`,
+                subject: 'From Cv Compiler: Your cv is ready. ',
+                text: "Cv Compiler",
+                html: `
+                <html>
+                <h3> hi ${User.firstName} Your cv is ready. </h3> 
+                <a href = "www.google.com"> click here </a> to see your cv. 
+                </html>
+                `
+            }
+            
+            
+            transporter.sendMail(mailOptions, function(error, info){
+                if(error){
+                    return res.status(500).json( { error: true,  msg: error.message})
+                }
+                else{
+                return res.json(
+                        {status: true, msg: "email successfuly sent"}
+                    )
+                    // console.log("Email sent"+ info.response);
+                }
+            })
+        } catch (error) {
+            return res.json( { error: true,  msg: error.message})
+         }
+        }
+    
+  
+
 module.exports = {
     getCv,
     addAllRecommendation,
     getUserCv,
-    getDetailedUserCv
+    getDetailedUserCv,
+    sendEmail
 }
