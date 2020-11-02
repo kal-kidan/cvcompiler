@@ -1,6 +1,6 @@
 const mongoose = require('./../lib/db-connect');
 const autoIncrement = require('mongoose-auto-increment');
-const { object } = require('joi');
+
 const cvHistorySchema = mongoose.Schema(
     {
         cvId: {

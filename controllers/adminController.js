@@ -146,8 +146,7 @@ const getUserCv = async (req, res) => {
      uploadedSection.forEach((uploadedSection, index)=>{
         let sectionId = uploadedSection.sectionId
         let section = dbsections[index]
-         if(!recommendation[index]){
-            recommendation[index] = [{description:Array(), updatedAt: ''}]
+         if(!recommendation[index] || !recommendation[index].description){
             sections.push({sectionId, name: section.name, section,uploaded: uploadedSection.description, recommended: [], updatedAt: '' })
          }
          else{    
