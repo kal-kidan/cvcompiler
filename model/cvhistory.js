@@ -12,17 +12,12 @@ const cvHistorySchema = mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: 'users', 
             required: true
-        },
-        admin:{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'users',
-            required: true 
-        },
+        }, 
         version:{
             type: Number,
           },
-          sections: {
-            sectionId:{
+          sections: [
+           { sectionId:{
                 type: mongoose.Schema.Types.ObjectId,
                 ref: 'sections',
                 unique:true,
@@ -38,8 +33,8 @@ const cvHistorySchema = mongoose.Schema(
             updatedAt:{
                 type: Date,
                 default: Date.now()
-            }
-          }
+            }}
+          ]  
     },
     {
         timestamps: true

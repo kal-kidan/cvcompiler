@@ -4,30 +4,36 @@ const {section} = require('../model/section')
 async function insertSections(){
     const sections = [
         {
-            name: "education",
+            name: "achievement",
             category: "cv"
         },
         {
-            name: "work",
+            name: "education",
             category: "cv"
         },
         {
             name: "personal_info",
             category: "cv"
         },
-        {
-            name: "achievement",
-            category: "cv"
-        },
+        
         {
             name: "skill",
             category: "cv"
+        },
+        {
+            name: "work",
+            category: "cv"
         }
+      
     ]
 
     try {
-        await section.create(sections)
-        return console.log("sections added successfuly ...");
+        for(let s of sections){
+           let addedSection = new section(s)
+           await addedSection.save()
+        }
+        
+         console.log("sections added successfuly ...");
     } catch (error) {
         return console.log(error.message);
     }

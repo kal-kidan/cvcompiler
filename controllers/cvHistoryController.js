@@ -4,6 +4,8 @@ const { section } = require("./../model/section");
 const { CvHistory } = require("./../model/cvhistory"); 
 const addHistory = async (req, res)=>{
    try {
+    let history = req.body
+    history.user = req.user._id
     const cv = await CvHistory.create(req.body)
     if(cv){
         cv.nextCount(function(err, count) {});

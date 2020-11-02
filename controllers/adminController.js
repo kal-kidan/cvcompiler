@@ -34,6 +34,17 @@ const isAdminFound = async (cvId, adminId) =>{
 }
 const addAllRecommendation = async (req, res)=>{
     let {recommendations} = req.body
+    recommendations = recommendations.sort(function(a, b){
+        let an = a.name.toLowerCase()
+        let bn = b.name.toLowerCase()
+         if (an < bn) {
+             return -1;
+         }
+         if (an > bn) {
+             return 1;
+         }
+         return 0; 
+     })
     let cvId = req.params._id 
     let adminId = req.user._id
     
@@ -133,12 +144,16 @@ const getUserCv = async (req, res) => {
     const updatedAt =userCv.updatedAt;
     const createdAt =userCv.createdAt;
      uploadedSection.forEach((uploadedSection, index)=>{
+        let sectionId = uploadedSection.sectionId
+        let section = dbsections[index]
          if(!recommendation[index]){
-            recommendation[index] = {description:'', updatedAt: ''}
+            recommendation[index] = [{description:Array(), updatedAt: ''}]
+            sections.push({sectionId, name: section.name, section,uploaded: uploadedSection.description, recommended: [], updatedAt: '' })
          }
-         let sectionId = uploadedSection.sectionId
-         let section = dbsections[index]
-         sections.push({sectionId, section,uploaded: uploadedSection.description, recommended: recommendation[index].description, updatedAt: recommendation[index].updatedAt })
+         else{    
+            sections.push({sectionId, name: section.name, section,uploaded: uploadedSection.description, recommended: recommendation[index].description, updatedAt: recommendation[index].updatedAt })
+         }
+        
      })
     res.send({
         sections,

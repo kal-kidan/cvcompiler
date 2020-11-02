@@ -1,15 +1,13 @@
-const multer = require("multer");
-const path = require("path"); 
+
 const bcrypt = require('bcryptjs');
 const fs = require('fs')
 const { validationResult } = require('express-validator')
-const pdfparse = require('pdf-parse')
 const formValidator = require('./../middleware/form-validator')
 
 const { user } = require("./../model/user");
 const { cv } = require("./../model/cv"); 
 const { section } = require("./../model/section"); 
-const helper = require("./helper");
+
 
  
 async function assignCv(req,res, adminId){
@@ -337,7 +335,18 @@ function getLatestUpdate(datas){
 
 // add cv from a form
 const addCv = async (req, res)=>{
-  const uploadedSection = req.body.sections
+  let uploadedSection = req.body.sections
+  uploadedSection = uploadedSection.sort(function(a, b){
+    let an = a.name.toLowerCase()
+    let bn = b.name.toLowerCase()
+     if (an < bn) {
+         return -1;
+     }
+     if (an > bn) {
+         return 1;
+     }
+     return 0; 
+ })
   try {
     let admin = await user.findOne({role: "admin"}, null, { 
       skip:0, 
