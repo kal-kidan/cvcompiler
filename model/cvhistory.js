@@ -19,8 +19,7 @@ const cvHistorySchema = mongoose.Schema(
           sections: [
            { sectionId:{
                 type: mongoose.Schema.Types.ObjectId,
-                ref: 'sections',
-                unique:true,
+                ref: 'sections', 
                 required: true
             } ,
              description:{
