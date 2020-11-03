@@ -8,8 +8,13 @@ const addHistory = async (req, res)=>{
     history.user = req.user._id
     const cv = await CvHistory.create(req.body)
     if(cv){
-        cv.nextCount(function(err, count) {});
-        return res.json({status: true, msg: "you have successfuly added cv history"}) 
+        cv.nextCount(function(err, count) {
+            if(err){
+                return res.json({error: true, msg: err.message})
+            }
+            return res.json({status: true, msg: "you have successfuly added cv history"}) 
+        });
+       
     } 
    } catch (error) {
     return res.status(400).json({
