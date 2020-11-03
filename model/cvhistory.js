@@ -17,7 +17,8 @@ const cvHistorySchema = mongoose.Schema(
             type: Number,
           },
           sections: [
-           { sectionId:{
+           { 
+               sectionId:{
                 type: mongoose.Schema.Types.ObjectId,
                 ref: 'sections', 
                 required: true
