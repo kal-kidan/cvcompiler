@@ -6,6 +6,7 @@ const superAdminData = {
     email: "superadmin@gmail.com",
     phoneNumber: "+251911334455",
     password: "superadmin",
+    verified: true,
     role: "superAdmin"
 }
 

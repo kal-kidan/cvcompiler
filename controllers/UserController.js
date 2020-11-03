@@ -167,7 +167,7 @@ const saveAll = async (req,res)=>{
       }
       else{
         // addEdittedRecommendation(req,res,editedSection) 
-        res.status(404).json({error: true, msg: "not found"})
+         res.status(404).json({error: true, msg: "not found"})
      }       
   } 
 
