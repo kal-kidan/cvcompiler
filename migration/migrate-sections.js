@@ -17,7 +17,7 @@ async function insertSections(){
         },
         
         {
-            name: "skill",
+            name: "skills",
             category: "cv"
         },
         {
