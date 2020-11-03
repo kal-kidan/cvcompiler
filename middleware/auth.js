@@ -16,6 +16,14 @@ const auth = async (req, res, next) => {
                }
            })
         }
+        if(User.verified === false){
+            return res.status(403).send({
+                error:{
+                    error: true,
+                    msg: "please verify your email account"
+                }
+            }) 
+        }
 
         req.user = User 
         req.token = token
