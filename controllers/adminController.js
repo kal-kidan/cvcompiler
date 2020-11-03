@@ -184,15 +184,23 @@ const getUserCv = async (req, res) => {
   const sendEmail = async (req, res)=>{
         try {
             let {userId} = req.body
+            let adminId = req.user._id
             if(!userId){
-                return res.status(400).json( { error: true,  msg: "enter user id"} )
+                return res.status(400).json({ error: true,  msg: "enter user id"} )
+            }
+            let userCv = await cv.findOne({admin: adminId, user: userId})
+            if(!userCv){
+                return res.status(404).json({ error: true,  msg: "cv not found"} )
+            }
+            if(userCv.status === "sent"){
+                return res.status(400).json({ error: true,  msg: "you have already sent an email"} ) 
             }
             let User = await user.findOne({_id: userId})
-            var transporter = nodemailer.createTransport({
+            let transporter = nodemailer.createTransport({
                 service: 'gmail',
                 auth: {
-                    user: 'kalkidant05@gmail.com',
-                    pass: 't05kalkidan'
+                    user: process.env.EMAIL,
+                    pass: process.env.PASS
                 },
                 connectionTimeout: 20000
             })
@@ -201,7 +209,6 @@ const getUserCv = async (req, res) => {
                 from: 'kalkidant05@gmail.com',
                 to: `${User.email}`,
                 subject: 'From Cv Compiler: Your cv is ready. ',
-                text: "Cv Compiler",
                 html: `
                 <html>
                 <h3> hi ${User.firstName} Your cv is ready. </h3> 
@@ -211,17 +218,10 @@ const getUserCv = async (req, res) => {
             }
             
             
-             transporter.sendMail(mailOptions, function(error, info){
-                if(error){
-                    return res.status(500).json( { error: true,  msg: error.message})
-                }
-                else{
-                return res.json(
-                        {status: true, msg: "email successfuly sent"}
-                    )
-                    // console.log("Email sent"+ info.response);
-                }
-            })
+            await transporter.sendMail(mailOptions)
+            await cv.findOneAndUpdate({admin: adminId, user: userId}, {status: "sent"})
+             await user.findOneAndUpdate({_id: adminId}, {$inc:{assignedCv: -1}})
+            return res.json( {status: true, msg: "email successfuly sent"})
         } catch (error) {
             return res.json( { error: true,  msg: error.message})
          }
