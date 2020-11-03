@@ -1,4 +1,2 @@
 /node_modules
 /uploads/cvs
-/.env
-/lib/db-connect.js
