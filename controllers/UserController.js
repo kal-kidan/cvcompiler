@@ -173,7 +173,7 @@ const saveAll = async (req,res)=>{
 
   return res.send({
     status: true,
-    msg: "you have successfully edited admin recommendation" 
+    msg: "you have updated successfully" 
   
   })
  } catch (error) {
@@ -189,7 +189,6 @@ const saveAll = async (req,res)=>{
 
 
 const updateEditedSection  = async (req, res, doc,cvSection) =>{
-  console.log("called");
   try {
     let {sectionId} = cvSection
     let {description} = cvSection

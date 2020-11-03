@@ -82,11 +82,14 @@ auth.unless = unless;
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(auth.unless({ path:['/v1/auth/login', '/v1/auth/signup', '/v1/auth/verify'] }))
+app.use('/uploads', express.static(__dirname + "/uploads"))
+
+ app.use(auth.unless({ path:['/v1/auth/login', '/v1/auth/signup', '/v1/auth/verify'] }))
 
  app.use('/v1', v1Router)
 
-//Capture All 404 errors
+
+// Capture All 404 errors
 app.use(function (req,res,next){
 	res.status(404).send('Unable to find the requested resource!');
 });
