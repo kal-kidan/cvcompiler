@@ -74,6 +74,7 @@ const registerAdmin = async (req, res)=>{
                 email: body.email,
                 phoneNumber: body.phoneNumber,
                 password: "adminadmin",
+                verified: true,
                 role: "admin", 
                 assignedCv: 0
             }           
