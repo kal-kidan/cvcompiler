@@ -19,7 +19,8 @@ const cvSchema = mongoose.Schema(
             default: 'new'
           },
           cvProfileImage:{
-            type: String
+            type: String,
+            default: ''
           },
         uploadedSection:[
             {

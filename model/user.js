@@ -47,6 +47,10 @@ const userSchema = mongoose.Schema(
             required: true,
             minlength: 6,
         },
+        verified:{
+            type: Boolean,
+            default: false
+        }, 
         role:{
             type: String,
             required: true 

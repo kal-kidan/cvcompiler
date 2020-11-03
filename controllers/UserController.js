@@ -288,7 +288,7 @@ const updateRecommendation = async (req, res)=>{
 }
 const getDetailedUserCv = async (req, res) => {
   const { _id } = req.params
-  const userCv = await cv.findOne({_id }).select('_id status adminId uploadedSection recommendation editedSections createdAt updatedAt')
+  const userCv = await cv.findOne({user: _id }).select('_id status adminId cvProfileImage uploadedSection recommendation editedSections createdAt updatedAt')
   if (!userCv) {
     return res.status(404).send({
       error: true,
@@ -325,6 +325,7 @@ const getDetailedUserCv = async (req, res) => {
   
   res.send({
       sections,
+      cvProfileImage: userCv.cvProfileImage,
       userSectionUpdatedAt: getLatestUpdate(uploadedSections),
       cvCreatedAt: createdAt,
       cvUpdatedAt: updatedAt 

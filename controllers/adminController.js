@@ -211,7 +211,7 @@ const getUserCv = async (req, res) => {
             }
             
             
-            transporter.sendMail(mailOptions, function(error, info){
+             transporter.sendMail(mailOptions, function(error, info){
                 if(error){
                     return res.status(500).json( { error: true,  msg: error.message})
                 }

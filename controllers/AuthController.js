@@ -15,7 +15,18 @@ const register = async (req, res) => {
     try {
         let user = await newUser.save()
         let token = await user.getAuthToken() 
-        res.send({user, token, status:true, msg:"user successfuly signed up"})
+        let subject = "From Cv Compiler: Here is your verifcation Link."
+        let link =`https://localhost:4200/auth/verify/${token}`
+        let message = `<html> 
+        click the <a href=""> ${link} </a> to verify your account.
+        </html>`
+        let email = user.email
+        let isEmailSent = sendEmail(email, subject, message)
+        if(isEmailSent){
+           return res.send({status:true, msg:"you have successfuly signed up check your email to verify"})
+        }
+       
+       
     } catch (error) {    
         if(error.keyValue){
             if(error.keyValue.email){   
@@ -28,24 +39,48 @@ const register = async (req, res) => {
                 errorArray.errors.push(emailError)
                 res.status(400).send(errorArray)
             }
+            else{
+                return res.status(500).json( { status:false, error: true,  msg: error.message})
+            }
         }
         else{
-            res.status(500).send(
-                {
-                    errors:{
-                        msg : error.message
-                    }
-                }
-            )
-
+            res.status(500).send({errors:{msg : error.message}})
+        }       
         }
-                
-             
-        }
-      
-         
-    
+}
 
+
+function sendEmail(email, subject, message){
+    try {
+        
+        var transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: process.env.EMAIL,
+                pass: process.env.PASS
+            },
+            connectionTimeout: 20000
+        })
+        
+        const mailOptions = {
+            from: 'kalkidant05@gmail.com',
+            to: `${email}`,
+            subject: `${subject}`,
+            html: `${message}`
+        }
+        
+        
+         transporter.sendMail(mailOptions, function(error, info){
+            if(error){
+                throw error;
+            }
+            else{
+               return true
+            }
+        })
+    } catch (error) {
+        throw error
+     }
 }
 const login = async (req, res)=>{ 
     const errors = validationResult(req)

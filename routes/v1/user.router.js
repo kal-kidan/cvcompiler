@@ -178,7 +178,7 @@ router.get('/cv/:_id' , hasPermission("getDetailedUserCv-user"), userController.
 router.post('/cv/:cvId' ,validateSection("sections"), hasPermission("saveAll"), userController.saveAll)
 router.patch('/cv/profileimage', CvController.uploadImage)
 router.get('/cvhistory/:historyId', CvHistoryController.getCvHistory)
-router.get('/cvhistorys/:cvId', CvHistoryController.getCvHistorys)
+router.get('/cvhistorys/:userId', CvHistoryController.getCvHistorys)
 router.delete('/cvhistory/:historyId', CvHistoryController.deleteCvHistory)
 router.post('/cvhistory', validateSchema, CvHistoryController.addHistory)
 router.get('/iscvuploaded',CvController.isCvUploaded)

@@ -25,8 +25,8 @@ const addHistory = async (req, res)=>{
 }
 const getCvHistorys = async (req, res)=>{
   try {
-    let {cvId} = req.params
-     const historys = await CvHistory.find({cvId, user: req.user._id})
+    let {userId} = req.params
+     const historys = await CvHistory.find({user: userId})
      const latestCv = await cv.findOne({user: req.user._id})
      if(!historys) return res.status(401).json({error: true, msg: "you have not the right privilege"})
      else return res.json({historys, latestCv: latestCv.uploadedSection})
