@@ -63,7 +63,7 @@ const swaggerOptions = {
         }
     },
      
-    apis: [ './routes/auth.js', './routes/user.js', './routes/admin.js' , './routes/SuperAdmin.js', './routes/index.js'],
+    apis: [ './routes/auth.js', './routes/user.js', './routes/admin.js' , './routes/SuperAdmin.js', './routes/index.js',],
  
 }
 
@@ -82,7 +82,7 @@ auth.unless = unless;
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(auth.unless({ path:['/v1/auth/login', '/v1/auth/signup'] }))
+app.use(auth.unless({ path:['/v1/auth/login', '/v1/auth/signup', '/v1/auth/verify'] }))
 
  app.use('/v1', v1Router)
 

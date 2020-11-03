@@ -123,4 +123,6 @@ router.post('/signup',  validate.signUp,authController.register)
  */
 router.post('/login', validate.logIn, authController.login)
 
+router.post('/verify',authController.verifyEmail)
+
 module.exports = router
