@@ -23,13 +23,35 @@ const register = async (req, res) => {
         </html>`
         let email = createdUser.email
         try {
-        const sentEmail = await sendEmail(email, subject, message ,res)
-        if(sentEmail){
-            return res.send({status:true, msg:"you have successfuly signed up check your email to verify"})
-        }
-       else{
-        return res.status(500).json( { status:false, error: true,  msg: sentEmail})
-       }
+            let transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    user: process.env.EMAIL,
+                    pass: process.env.PASS
+                },
+                connectionTimeout: 60000
+            })
+            
+            const mailOptions = {
+                from: 'kalkidant05@gmail.com',
+                to: `${email}`,
+                subject: `${subject}`,
+                html: `${message}`
+            }
+            
+            
+            await transporter.sendMail(mailOptions, function(error, info){
+                if(error){
+                    console.log(error);
+                    return res.status(500).json( { status:false, error: true,  msg: error.message})
+                }
+                else{
+                    
+                    return res.send({status:true, msg:"you have successfuly signed up check your email to verify"})
+                }
+            })
+   
+           
         } catch (error) {
             return res.status(500).json( { status:false, error: true,  msg: error.message})
         }
@@ -58,31 +80,7 @@ const register = async (req, res) => {
 
 
 async function sendEmail(email, subject, message){
-    let transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: process.env.EMAIL,
-            pass: process.env.PASS
-        },
-        connectionTimeout: 20000
-    })
-    
-    const mailOptions = {
-        from: 'kalkidant05@gmail.com',
-        to: `${email}`,
-        subject: `${subject}`,
-        html: `${message}`
-    }
-    
-    
-    await transporter.sendMail(mailOptions, function(error, info){
-        if(error){
-            return error.message 
-        }
-        else{
-           return true
-        }
-    })
+ 
     }
  
 
