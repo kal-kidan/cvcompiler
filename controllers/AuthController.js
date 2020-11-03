@@ -17,7 +17,7 @@ const register = async (req, res) => {
         let createdUser = await newUser.save()
         const emailToken = await jwt.sign({email: createdUser.email}, process.env.EMAIL_KEY); 
         let subject = "From Cv Compiler: Here is your verifcation Link."
-        let link =`https://localhost:4200/auth/verify/${emailToken}`
+        let link =`http://localhost:4200/auth/verify/${emailToken}`
         let message = `<html> 
         click the <a href="${link}"> here </a> to verify your account.
         </html>`
