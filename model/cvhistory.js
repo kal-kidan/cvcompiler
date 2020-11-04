@@ -1,9 +1,9 @@
 const mongoose = require('./../lib/db-connect');
 const autoIncrement = require('mongoose-auto-increment');
-
+ 
 const cvHistorySchema = mongoose.Schema(
     {
-        cvId: {
+        cv: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'cvs', 
             required: true
@@ -13,12 +13,12 @@ const cvHistorySchema = mongoose.Schema(
             ref: 'users', 
             required: true
         }, 
-        version:{
+         version:{
             type: Number,
           },
           sections: [
            { 
-               sectionId:{
+            sectionId:{
                 type: mongoose.Schema.Types.ObjectId,
                 ref: 'sections', 
                 required: true
@@ -26,6 +26,9 @@ const cvHistorySchema = mongoose.Schema(
              description:{
                type: Object, 
              },
+             name: {
+                type: String
+            },
              createdAt:{
                 type: Date,
                 default: Date.now()

@@ -84,7 +84,7 @@ const cvSchema = mongoose.Schema(
 )
 
  
-const cv = mongoose.model('cv',cvSchema);
+const cv = mongoose.model('cvs',cvSchema);
 
 module.exports = {cv};
  

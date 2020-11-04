@@ -119,7 +119,7 @@ const forgotPassword = async (req, res)=>{
     }
     const emailToken = await jwt.sign({email}, process.env.FORGOT_PASSWORD_KEY)
     let subject = "From Cv Compiler: Here is your verifcation Link."
-    let link =`${process.env.URL_FRONT}/auth/forgotpassword/${emailToken}`
+    let link =`${process.env.URL_FRONT}/auth/forgot-password/${emailToken}`
     let message = `<html> 
     click the <a href="${link}"> here </a> to change your passord.
     </html>`
