@@ -211,8 +211,8 @@ const getUserCv = async (req, res) => {
                 subject: 'From Cv Compiler: Your cv is ready. ',
                 html: `
                 <html>
-                <h3> hi ${User.firstName} Your cv is ready. </h3> 
-                <a href = "www.google.com"> click here </a> to see your cv. 
+                <h3> Hi ${User.firstName} Your cv is ready. </h3> 
+                <a href = ${process.env.FORGOT_PASSWORD_KEY}> click here </a> to see your cv. 
                 </html>
                 `
             }
