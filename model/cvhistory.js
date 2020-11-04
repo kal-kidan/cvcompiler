@@ -23,7 +23,7 @@ const cvHistorySchema = mongoose.Schema(
                 ref: 'sections', 
                 required: true
             } ,
-             description:{
+             uploaded:{
                type: Object, 
              },
              name: {
