@@ -1,11 +1,13 @@
 const multer = require("multer");
 const path = require("path"); 
 
-const { user } = require("./../model/user");
-const { cv } = require("./../model/cv"); 
-const { section } = require("./../model/section"); 
-const helper = require("./helper");
+const { user } = require("./../model/user")
+const { cv } = require("./../model/cv")
+const { section } = require("./../model/section")
+const helper = require("./helper")
 
+const fs = require('fs')
+ 
 const uploadImage = async (req, res) => {
     const storage = multer.diskStorage({
       destination: function (req, file, cb) {
@@ -28,6 +30,17 @@ const uploadImage = async (req, res) => {
      }
      else{
         try {
+            let userCv = await cv.findOne({user: req.user._id})
+            let {cvProfileImage} = userCv
+            let name = path.basename(cvProfileImage)
+            if(cvProfileImage.length > 0){
+              let filePath = path.join(__dirname, '..', 'uploads', 'images', name)
+              fs.unlink(filePath, (err)=>{
+                if (err) {
+                  return res.json({error: true, msg: err.message})
+                }
+              })
+            }
             await cv.findOneAndUpdate({user: req.user._id}, {cvProfileImage: `/uploads/images/${req.fileName}`})
             res.json({status: true, msg: "image uploaded successfuly"}) 
         } catch (error) {
