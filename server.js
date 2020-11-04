@@ -84,7 +84,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use('/uploads', express.static(__dirname + "/uploads"))
 
- app.use(auth.unless({ path:['/v1/auth/login', '/v1/auth/signup', '/v1/auth/verify'] }))
+ app.use(auth.unless({ path:['/v1/auth/login', '/v1/auth/signup', '/v1/auth/verify', '/v1/auth/forgotpassword', '/v1/auth/resetpassword'] }))
 
  app.use('/v1', v1Router)
 

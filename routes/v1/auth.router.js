@@ -125,4 +125,6 @@ router.post('/login', validate.logIn, authController.login)
 
 router.post('/verify',authController.verifyEmail)
 
+router.post('/forgotpassword',authController.forgotPassword)
+router.post('/resetpassword',authController.resetPassword)
 module.exports = router
