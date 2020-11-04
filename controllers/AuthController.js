@@ -121,15 +121,17 @@ const login = async (req, res)=>{
     try {
        let User = await user.findByCredentials(req.body.email, req.body.password) 
         let errors={msg:''}
-        if(User._id){
+        if(User._id ){
+            if(User.verified === false){
+                res.status(400).send({error:true, status: false,msg: "please verify your email"})
+            }
             let status = true
             const token = await User.getAuthToken() 
             res.send({user: User, token, status})
         }
         else{
-            let status = false
-            errors.msg=User
-            res.status(400).send({errors, status})
+            let status = false 
+            res.status(400).send({error:true, status,msg: "incorrect password or username"})
         }
    
     } catch (error) { 
