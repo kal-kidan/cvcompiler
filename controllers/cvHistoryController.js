@@ -31,7 +31,7 @@ const getCvHistorys = async (req, res)=>{
      if(!historys || !latestCv) return res.status(401).json({error: true, msg: "you have not the right privilege"})
      else return res.json({historys, latestCv: latestCv.uploadedSection})
   } catch (error) {
-      res.status(400).json({error: true, msg: error.message})
+     return res.status(400).json({error: true, msg: error.message})
   }
 }
 
@@ -45,7 +45,7 @@ const getCvHistory = async (req,res)=>{
         if(!history) return res.status(404).json({error: true, msg: "history not found"})
         else return res.json({_id: history._id, cvProfileImage: cv.cvProfileImage,sections: history.sections, createdAt: history.createdAt, updatedAt: history.updatedAt, version: history.history})
     } catch (error) {
-        res.status(400).json({error: true, msg: error.message})
+       return res.status(400).json({error: true, msg: error.message})
     }
 }
 
@@ -57,7 +57,7 @@ const deleteCvHistory = async (req,res)=>{
         if(!deletedHistory) return res.status(404).json({error: true, msg: "history not found"})
         else return res.json({status: true, msg: "cv history deleted successfuly"})
     } catch (error) {
-        res.status(400).json({error: true, msg: error.message})
+       return res.status(400).json({error: true, msg: error.message})
     }
 }
 

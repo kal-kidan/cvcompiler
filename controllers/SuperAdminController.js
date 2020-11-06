@@ -12,7 +12,7 @@ const getAdmin = async (req, res)=>{
     const limit = parseInt(req.query.limit)  
     const page = parseInt(req.query.page)
     if( !(limit > 0 && page > 0) ) {  
-       res.status(400).send(
+       return res.status(400).json(
            {
                "errors":{
                    "msg": "invalid input"
@@ -23,10 +23,10 @@ const getAdmin = async (req, res)=>{
     }
     try { 
         user.paginate({role: "admin"}, { page, limit }, function(err, result) {
-          return  res.send(result)
+          return  res.json(result)
         });
     } catch (errors) {
-        res.status(500).send({errors})
+       return res.status(500).json({errors})
     }
       
  }
@@ -38,13 +38,13 @@ const deleteAdmin = async (req, res)=>{
         const admin = await user.deleteOne({_id: adminId});
         const numberOfDeletedAdmins = admin.n
         if(numberOfDeletedAdmins===1){
-            res.send({ 
+            return res.json({ 
                 status: true, 
                 msg: "the admin successfuly deleted"
             })  
         }
         else{
-            res.status(404).send({
+           return res.status(404).json({
                 status: false, 
                 msg: "the admin id is not found"
             }) 
@@ -53,7 +53,7 @@ const deleteAdmin = async (req, res)=>{
     } catch (error) {
         const errors = {}
         errors.msg = "invalid admin id"
-        res.status(400).send({errors})
+        return res.status(400).json({errors})
     }
   
 }
@@ -61,8 +61,7 @@ const deleteAdmin = async (req, res)=>{
 const registerAdmin = async (req, res)=>{
     const errors = validationResult(req)
     if(!errors.isEmpty()){
-        res.status(400).send(errors)
-        return
+        return res.status(400).send(errors) 
     }
     const superAdmin = req.user;
     try {
@@ -81,7 +80,7 @@ const registerAdmin = async (req, res)=>{
         );
 
         let savedAdmin = await admin.save()
-        res.send({
+        return res.json({
             data: admin,
             status: true,
             msg: "admin registered successfuly"
@@ -97,12 +96,12 @@ const registerAdmin = async (req, res)=>{
                 emailError.value = req.body.email
                 emailError.location = 'body'
                 errorArray.errors.push(emailError)
-                res.status(400).send(errorArray); 
+               return  res.status(400).send(errorArray); 
             }  
         }
 
         else{
-            res.status(500).send(error)
+           return res.status(500).send(error)
         }
       
         
@@ -115,20 +114,19 @@ const addSection = async (req, res)=>{
     let addedSection = req.body
     const errors = validationResult(addedSection)
     if(!errors.isEmpty()){
-        res.status(400).send(errors)
-        return
+        return res.status(400).send(errors)
     }
      
     try {
       let savedSection = await section.create(addedSection) 
       if(savedSection){
-        res.send({
+        return res.json({
             status: true,
             msg: "section added successfuly"
         })
       }
     } catch (error) {
-        res.status(400).send({
+       return res.status(400).json({
             error: true,
             msg: error.message
         })
@@ -140,7 +138,7 @@ const deleteSection = async(req, res)=>{
     try {
       let deletedSection = await section.findByIdAndRemove(_id) 
       if(!deletedSection){
-         return res.status(404).send(
+         return res.status(404).json(
               {
                   errors: {
                     error: true,
@@ -150,14 +148,14 @@ const deleteSection = async(req, res)=>{
           )
       }
 
-      res.send({
+      return res.json({
           status: true,
           msg: "section deleted successfuly",
           section: deletedSection
       })
 
     } catch (error) {
-        res.status(404).send({
+        return res.status(404).json({
             error: true,
             msg: error.message
         })

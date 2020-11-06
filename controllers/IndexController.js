@@ -3,14 +3,14 @@ const { cv } = require("./../model/cv");
 const { section } = require("./../model/section"); 
 
 const me = async (req, res) => {
-    res.send({user: req.user})
+    return res.json({user: req.user})
 }
 const getSections = async (req, res)=>{ 
     try {
       let sections = await section.find({})
       res.json(sections)
     } catch (error) {
-        res.status(500).send({
+      return  res.status(500).json({
             error: true,
             msg: error.message
         })

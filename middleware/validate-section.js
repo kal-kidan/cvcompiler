@@ -1,6 +1,6 @@
 const Joi = require('joi');
 const section = require('../model/section');
-const {educationShema,achievementSchema,workSchema,skillSchema,personalInfoSchema} = require('./../lib/section-schema')
+const {educationShema,achievementSchema,workSchema,skillSchema,personalInfoSchema, referencesSchema} = require('./../lib/section-schema')
 const validateSection = (dataName) =>  async (req, res, next)=>{
     let sections
     if(dataName==="sections"){
@@ -28,6 +28,9 @@ const validateSection = (dataName) =>  async (req, res, next)=>{
             }
             if(name.toLowerCase()==="skill"){
                 await skillSchema.validateAsync(section.description)
+            }
+            if(name.toLowerCase()==="reference"){
+                await referencesSchema.validateAsync(section.description)
             }
         }
        

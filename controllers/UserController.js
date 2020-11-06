@@ -25,17 +25,15 @@ const getCv = async (req, res) => {
   const  _id  = req.params._id;  
   const userCv = await cv.findOne({ _id});
   if (!userCv) {
-    res.status(404).send({
+    return res.status(404).json({
       error: true,
       msg: "cv not found"
     });
-    return;
   }
   const path = userCv.path; 
   fs.readFile(path, (err, data)=>{
-      if(err){
-           console.log(err)
-           return
+      if(err){ 
+           return res.json({error:true, msg: err.message})
       }
       res.writeHead(200, {
         'Content-Type': 'application/pdf',
@@ -51,13 +49,13 @@ const getUserCv = async (req, res) => {
   const { _id } = req.user;  
   const userCv = await cv.findOne({ user: _id });
   if (!userCv) {
-    return res.status(404).send({
+    return res.status(404).json({
       error: true,
       msg: "cv not found"
     });
    
   }
-  res.send({
+  return res.json({
     userCv
   })
 
@@ -68,7 +66,7 @@ const getRecommendation = async (req, res)=>{
     let {_id} = req.params
     let Cv = await cv.findOne({user:_id})
     if(!Cv){
-      res.send({
+      return res.json({
         error:{
           error: true,
           msg: "this user hasn't uploaded cv"
@@ -76,9 +74,9 @@ const getRecommendation = async (req, res)=>{
       })
     }
     let {recommendation} = Cv
-    res.send({recommendation})
+    return res.json({recommendation})
   } catch (error) {
-    res.status(500).send({
+    return res.status(500).json({
       error: true,
       msg: error.message
     })
@@ -96,7 +94,7 @@ const updateUser = async (req, res) => {
     try {
       userPassed.password = await bcrypt.hash(req.body.password, 8) 
     } catch (error) {
-      return res.send({
+      return res.json({
         error: true,
         msg: error.message
       })
@@ -113,19 +111,19 @@ const updateUser = async (req, res) => {
   updatedUser.password = userPassed.password
   let result  = await updatedUser.save();
   if(result){
-   return res.send({
+   return res.json({
       data: result,
       status: true,
       msg: "user updated sucessfuly"
     })
   }
  } catch (error) {
-  return res.status(400).send(
-    {
-      error: true,
-      msg: error.message
-    }
-  )
+    return res.status(400).json(
+      {
+        error: true,
+        msg: error.message
+      }
+    )
  }
  
    
@@ -146,7 +144,7 @@ const saveAll = async (req,res)=>{
   const cvSections = req.body.sections
   const {cvId} = req.params
   if(!isCvFound(req.user._id, cvId)){
-    return res.status(404).send({
+    return res.status(404).json({
         error: true,
         msg: "cv not found"
     })
@@ -171,13 +169,13 @@ const saveAll = async (req,res)=>{
      }       
   } 
 
-  return res.send({
+  return res.json({
     status: true,
     msg: "you have updated successfully" 
   
   })
  } catch (error) {
-      return res.status(500).send({
+      return res.status(500).json({
         error: true,
         msg: error.messsage
     })
@@ -195,8 +193,7 @@ const updateEditedSection  = async (req, res, doc,cvSection) =>{
     let sectionToEdit =  doc.uploadedSection.find(section=> section.sectionId == sectionId)
     let _id = sectionToEdit._id
     let section = doc.uploadedSection.id(_id)
-    if(section){
-      console.log(section);
+    if(section){ 
       section["description"] = description
       section["updatedAt"] = Date.now()
     await doc.save();
@@ -245,12 +242,12 @@ const updateRecommendation = async (req, res)=>{
               )
               
          if(updatedSection.nModified !== 1){
-            return res.status(404).send({
+            return res.status(404).return({
                  error: true,
                  msg: "cv not found make sure you have the right privillege"
              })
          }
-         return res.send({
+         return res.json({
              status: true,
              msg: "you have successfully edited cv section",
              updatedData: doc
@@ -263,15 +260,15 @@ const updateRecommendation = async (req, res)=>{
           let _id = sectionToEdit._id
           let section = doc.editedSections.id(_id)
           section["description"] = description
-          doc.save();
-          return res.send({
+          await doc.save();
+          return res.json({
               status: true,
               msg: "you have successfully edited admin recommendation",
               updatedData: doc
   
           })
       }).catch(err => {
-          res.status(500).send({
+          res.status(500).json({
               error: true,
               msg: err.messsage
           })
@@ -279,7 +276,7 @@ const updateRecommendation = async (req, res)=>{
       });
     
   } catch (error) {
-      res.status(500).send({
+      return res.status(500).json({
           error: true,
           msg: error.messsage
       })
@@ -289,7 +286,7 @@ const getDetailedUserCv = async (req, res) => {
   const { _id } = req.params
   const userCv = await cv.findOne({user: _id }).select('_id status adminId cvProfileImage uploadedSection recommendation editedSections createdAt updatedAt')
   if (!userCv) {
-    return res.status(404).send({
+    return res.status(404).json({
       error: true,
       msg: "cv not found"
     })
@@ -322,7 +319,7 @@ const getDetailedUserCv = async (req, res) => {
  
   })
   
-  res.send({
+  return res.json({
       sections,
       cvProfileImage: userCv.cvProfileImage,
       userSectionUpdatedAt: getLatestUpdate(uploadedSections),
@@ -365,12 +362,12 @@ const addCv = async (req, res)=>{
     } 
   })
  
-  if (!admin) return res.status(500).send({error:true, msg: "there is no registered admin"})
+  if (!admin) return res.status(500).json({error:true, msg: "there is no registered admin"})
   const cvData = await cv.create({uploadedSection, user: req.user._id, admin: admin._id})
   if (cvData) { 
     const bool = await assignCv(req,res, admin._id) 
     if(bool){
-      return res.send({
+      return res.json({
         data: {
           status: true,
           msg: "cv sections uploaded sucessfully",
@@ -383,10 +380,10 @@ const addCv = async (req, res)=>{
   } catch (error) {
     if (error.keyValue) {
       if (error.keyValue.user) { 
-        return res.status(400).send({error:true, msg: 'you have already added sections'}); 
+        return res.status(400).json({error:true, msg: 'you have already added sections'}); 
       }
     }
-    return res.status(500).send({error:true, msg: error.message})
+    return res.status(500).json({error:true, msg: error.message})
   }
 }
 

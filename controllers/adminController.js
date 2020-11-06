@@ -10,15 +10,14 @@ const getCv = async (req, res)=>{
     if(status === "onprogress" || status === "new" || status === "sent"){
         try {
             const cvsAssigned = await cv.find({status,admin: adminId}).select('_id user createdAt updatedAt').populate('user')
-            res.send(cvsAssigned)
+            res.json(cvsAssigned)
        
-        } catch (error) {
-            console.log(error)
-            res.send(error)
+        } catch (error) { 
+            res.json({error:true, msg: error.message})
         }
     }
     else{
-        res.status(404).send({
+        res.status(404).json({
             error:{
                 error: true,
             msg: `/admin/assigned-cv/${status} not found`
@@ -52,7 +51,7 @@ const addAllRecommendation = async (req, res)=>{
     try {
         const bool = await isAdminFound(cvId, adminId)
         if(!bool){
-            return res.status(404).send({
+            return res.status(404).json({
                 error: true,
                 msg: "cv not found"
             })
@@ -70,14 +69,14 @@ const addAllRecommendation = async (req, res)=>{
     }
         
     } catch (error) {
-        return res.status(400).send({
+        return res.status(400).json({
             error: true,
             msg: error.message
         })
     }
 
     
-    return res.send({
+    return res.json({
         status: true,
         msg: "you have successfully added recommendation",
 
@@ -116,13 +115,13 @@ const getUserCv = async (req, res) => {
     const { _id } = req.params
     const userCv =  await cv.findOne({ _id }).populate('user').select('_id status adminId user createdAt updatedAt')
     if (!userCv) {
-      return res.status(404).send({
+      return res.status(404).json({
         error: true,
         msg: "cv not found"
       })
      
     }
-    res.send({
+    return res.json({
       userCv
     })
   
@@ -132,7 +131,7 @@ const getUserCv = async (req, res) => {
     const { _id } = req.params
     const userCv = await cv.findOne({ _id }).populate('user').select('_id status adminId uploadedSection recommendation createdAt updatedAt')
     if (!userCv) {
-      return res.status(404).send({
+      return res.status(404).json({
         error: true,
         msg: "cv not found"
       })
@@ -163,7 +162,7 @@ const getUserCv = async (req, res) => {
      })
      
     
-    res.send({
+    res.json({
         sections,
         adminRecommendationUpdatedAt: getLatestUpdate(recommendation),
         cvCreatedAt: createdAt,

@@ -6,8 +6,7 @@ const bcrypt = require('bcryptjs');
 const register = async (req, res) => {
     const errors = validationResult(req)
     if(!errors.isEmpty()){
-        res.status(400).send(errors)
-        return
+        return res.status(400).json(errors) 
     }
     
     try {
@@ -42,13 +41,12 @@ const register = async (req, res) => {
             
             
             await transporter.sendMail(mailOptions, function(error, info){
-                if(error){
-                    console.log(error);
+                if(error){ 
                     return res.status(500).json( { status:false, error: true,  msg: error.message})
                 }
                 else{
                     
-                    return res.send({status:true, msg:"you have successfuly signed up check your email to verify"})
+                    return res.json({status:true, msg:"you have successfuly signed up check your email to verify"})
                 }
             })
    
@@ -67,14 +65,14 @@ const register = async (req, res) => {
                 emailError.value = req.body.email
                 emailError.location = 'body'
                 errorArray.errors.push(emailError)
-                res.status(400).send(errorArray)
+                res.status(400).json(errorArray)
             }
             else{
                 return res.status(500).json( { status:false, error: true,  msg: error.message})
             }
         }
         else{
-            res.status(500).send({errors:{msg : error.message}})
+            res.status(500).json({errors:{msg : error.message}})
         }       
         }
 }
@@ -140,13 +138,12 @@ const forgotPassword = async (req, res)=>{
         }
         
         await transporter.sendMail(mailOptions, function(error, info){
-            if(error){
-                console.log(error);
+            if(error){ 
                 return res.status(500).json( { status:false, error: true,  msg: error.message})
             }
             else{
                 
-                return res.send({status:true, msg:"verification email has been sent, please check your email"})
+                return res.json({status:true, msg:"verification email has been sent, please check your email"})
             }
         })
    } catch (error) {
@@ -182,8 +179,7 @@ const resetPassword = async (req, res)=>{
 const login = async (req, res)=>{ 
     const errors = validationResult(req)
     if(!errors.isEmpty()){
-        res.status(400).send(errors)
-        return
+        return res.status(400).json(errors) 
     }
     
     try {
@@ -191,20 +187,19 @@ const login = async (req, res)=>{
         let errors={msg:''}
         if(User._id ){
             if(User.verified === false){
-                return res.status(400).send({error:true, status: false,msg: "please verify your email"})
+                return res.status(400).json({error:true, status: false,msg: "please verify your email"})
             }
             let status = true
             const token = await User.getAuthToken() 
-            return  res.send({user: User, token, status})
+            return  res.json({user: User, token, status})
         }
         else{
             let status = false 
-           return res.status(400).send({error:true, status,msg: "incorrect password or username"})
+           return res.status(400).json({error:true, status,msg: "incorrect password or username"})
         }
    
     } catch (error) { 
-        console.log(error)
-        return res.status(500).send({
+        return res.status(500).json({
             errors:{
                 error:true,
                 msg: error.message

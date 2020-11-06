@@ -63,7 +63,7 @@ const swaggerOptions = {
         }
     },
      
-    apis: [ './routes/auth.js', './routes/user.js', './routes/admin.js' , './routes/SuperAdmin.js', './routes/index.js',],
+    apis: ['routes/v1.router.js', 'routes/v1/*.router.js'],
  
 }
 

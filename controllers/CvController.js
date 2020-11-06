@@ -23,7 +23,7 @@ const uploadImage = async (req, res) => {
   
     upload(req, res, async function(err) {
      if(err){
-         res.send({
+         res.json({
              error: true,
              msg: err.message
          })

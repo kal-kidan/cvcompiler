@@ -10,7 +10,7 @@ const validateSection = require('./../../middleware/validate-section')
 /**
  *  @swagger
  * 
- *  /user/cvsections:
+ *  /v1/user/cvsections:
  *    post:
  *      security:
  *        - bearerAuth: []
@@ -38,11 +38,10 @@ const validateSection = require('./../../middleware/validate-section')
 router.post('/cvsections', hasPermission("uploadCv"), validateSchema, userController.addCv)
 
 
-// router.get('/cvfile/:_id', userController.getCv)
 /**
  *  @swagger
  * 
- *  /user/{_id}:
+ *  /v1/user/data/{_id}:
  *    patch:
  *      security:
  *        - bearerAuth: []
@@ -91,7 +90,7 @@ router.patch('/data/:_id',  hasPermission("updateUser"),[
 /**
  *  @swagger
  * 
- *  /user/recommendation/{_id}:
+ *  /v1/user/recommendation/{_id}:
  *    get:
  *      security:
  *        - bearerAuth: []
@@ -116,7 +115,7 @@ router.get('/recommendation/:_id', hasPermission("getRecommendation"), userContr
 /**
  *  @swagger
  * 
- *  /user/cv/{_id}:
+ *  /v1/user/cv/{_id}:
  *    get:
  *      security:
  *        - bearerAuth: []
@@ -141,38 +140,31 @@ router.get('/cv/:_id' , hasPermission("getDetailedUserCv-user"), userController.
 /**
  *  @swagger
  * 
- *  /user/recommendation/{cvId}:
- *    patch:
+ *  /v1/user/cv/{cvId}:
+ *    post:
  *      security:
  *        - bearerAuth: []
  *      tags:
  *        - user
- *      description: edit recommendatins
- *      consumes:
- *        - application/json
- *      parameters: 
- *        - in: path
- *          name: cvId
- *          schema: 
- *             type: string 
- *          required: true 
+ *      description: add cv sections
  *      requestBody:
  *        content: 
- *          application/json:  
+ *          multipart/form-data:  
  *            schema:
  *              type: object
  *              properties:
- *                sections:
- *                  type: Array 
- *              example:
- *                  sections: [{"sectionId": "5f7701422006ac70210b2b9e","description": "summary edited by the user"}]
+ *                cv:
+ *                  type: file
+ *                  required: true 
  *      responses:
  *        200:
- *          description:  success message
- *        404: 
- *          description: cv not found
+ *          description: sections uploaded successfuly 
  *        400: 
- *          description: invalid cv id format
+ *          description: invalid data
+ *        404: 
+ *          description: id not found
+ * 
+ *     
  */
 
 router.post('/cv/:cvId' ,validateSection("sections"), hasPermission("saveAll"), userController.saveAll)
