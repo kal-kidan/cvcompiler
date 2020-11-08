@@ -19,7 +19,8 @@ const register = async (req, res) => {
         let subject = "From Cv Compiler: Here is your verifcation Link."
         let link =`${process.env.URL_FRONT}/auth/verify/${emailToken}`
         let message = `<html> 
-        click the <a href="${link}"> here </a> to verify your account.
+        <p> Thank you for signing up for Cv Compiler! Click the link below to verify your email, and we'll help you get started.
+        click the <a href="${link}"> here </a> to verify your account. </P>
         </html>`
         let email = createdUser.email
         try {
@@ -119,7 +120,10 @@ const forgotPassword = async (req, res)=>{
     let subject = "From Cv Compiler: Here is your verifcation Link."
     let link =`${process.env.URL_FRONT}/auth/forgot-password/${emailToken}`
     let message = `<html> 
-    click the <a href="${link}"> here </a> to change your passord.
+       <p> 
+       Hi ${User.firstName}, To finish setting up your password, we just need to make sure this email address is yours.
+       Please click <a href="${link}"> here </a> to change your passord.
+       </p>
     </html>`
         let transporter = nodemailer.createTransport({
             service: 'gmail',
