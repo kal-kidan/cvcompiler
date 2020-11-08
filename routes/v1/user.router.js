@@ -16,16 +16,17 @@ const validateSection = require('./../../middleware/validate-section')
  *        - bearerAuth: []
  *      tags:
  *        - user
- *      description: upload cv pdf file
+ *      description: upload cv sections
  *      requestBody:
  *        content: 
- *          multipart/form-data:  
+ *          application/json:  
  *            schema:
  *              type: object
  *              properties:
- *                cv:
- *                  type: file
- *                  required: true 
+ *                sections:
+ *                  type: array 
+ *                  items: 
+ *                    type: object  
  *      responses:
  *        200:
  *          description: cv uploaded successfuly 
@@ -140,34 +141,41 @@ router.get('/cv/:_id' , hasPermission("getDetailedUserCv-user"), userController.
 /**
  *  @swagger
  * 
- *  /v1/user/cv/{cvId}:
- *    post:
+ *  /v1/user/cv/{_id}:
+ *    patch:
  *      security:
  *        - bearerAuth: []
  *      tags:
  *        - user
- *      description: add cv sections
+ *      description: upload cv sections
+ *      parameters: 
+ *        - in: path
+ *          name: _id
+ *          schema: 
+ *             type: string 
+ *          required: true 
  *      requestBody:
  *        content: 
- *          multipart/form-data:  
+ *          application/json:  
  *            schema:
  *              type: object
  *              properties:
- *                cv:
- *                  type: file
- *                  required: true 
+ *                sections:
+ *                  type: array 
+ *                  items: 
+ *                    type: object  
  *      responses:
  *        200:
- *          description: sections uploaded successfuly 
+ *          description: cv uploaded successfuly 
  *        400: 
- *          description: invalid data
- *        404: 
+ *          description: invalid file format only pdf files are allowed  
+ *        404:
  *          description: id not found
  * 
  *     
  */
 
-router.post('/cv/:cvId' ,validateSection("sections"), hasPermission("saveAll"), userController.saveAll)
+router.patch('/cv/:cvId' ,validateSection("sections"), hasPermission("saveAll"), userController.saveAll)
 router.patch('/cv/profileimage', CvController.uploadImage)
 router.get('/cvhistory/:historyId', CvHistoryController.getCvHistory)
 router.get('/cvhistorys/:userId', CvHistoryController.getCvHistorys)
