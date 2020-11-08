@@ -7,7 +7,7 @@ const validate = require('./../../middleware/form-validator')
 /**
  *  @swagger
  * 
- *  /auth/signup:
+ *  /v1/auth/signup:
  *    post:
  *      tags:
  *        - auth
@@ -70,7 +70,7 @@ router.post('/signup',  validate.signUp,authController.register)
 /**
  *  @swagger
  * 
- *  /auth/login:
+ *  /v1/auth/login:
  *    post:
  *      tags:
  *        - auth
@@ -123,8 +123,87 @@ router.post('/signup',  validate.signUp,authController.register)
  */
 router.post('/login', validate.logIn, authController.login)
 
+/**
+ *  @swagger
+ * 
+ *  /v1/auth/verify:
+ *    post:
+ *      security:
+ *        - bearerAuth: []
+ *      tags:
+ *        - auth
+ *      description: verify user email
+ *      requestBody:
+ *        content: 
+ *          application/json:  
+ *            schema:
+ *              type: object
+ *              properties:
+ *                token:
+ *                  type: string
+ *                  required: true 
+ *      responses:
+ *        200:
+ *          description: your email verified successfuly
+ *        400: 
+ *          description: invalid token
+ */
 router.post('/verify',authController.verifyEmail)
 
+/**
+ *  @swagger
+ * 
+ *  /v1/auth/forgotpassword:
+ *    post:
+ *      security:
+ *        - bearerAuth: []
+ *      tags:
+ *        - auth
+ *      description: verify user email
+ *      requestBody:
+ *        content: 
+ *          application/json:  
+ *            schema:
+ *              type: object
+ *              properties:
+ *                email:
+ *                  type: string
+ *                  required: true 
+ *      responses:
+ *        200:
+ *          description: email has been sent 
+ *        404: 
+ *          description: email not found
+ */
 router.post('/forgotpassword',authController.forgotPassword)
+
+/**
+ *  @swagger
+ * 
+ *  /v1/auth/resetpassword:
+ *    post:
+ *      security:
+ *        - bearerAuth: []
+ *      tags:
+ *        - auth
+ *      description: verify user email
+ *      requestBody:
+ *        content: 
+ *          application/json:  
+ *            schema:
+ *              type: object
+ *              properties:
+ *                token:
+ *                  type: string
+ *                  required: true 
+ *                password:
+ *                  type: string
+ *                  required: true 
+ *      responses:
+ *        200:
+ *          description: password reseted successfuly
+ *        404: 
+ *          description: invalid token or password
+ */
 router.post('/resetpassword',authController.resetPassword)
 module.exports = router
