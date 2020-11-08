@@ -39,7 +39,7 @@ const getCvHistory = async (req,res)=>{
     try {
         let {historyId} = req.params
         let userId = req.user._id
-        const history = await (await CvHistory.findOne({_id: historyId, user: userId}).populate({path: 'cvs',  select: 'cvProfileImage' }))
+        const history = await (await CvHistory.findOne({_id: historyId, user: userId}).populate('cv')) 
         let cv = history.cv
         delete history.cv 
         if(!history) return res.status(404).json({error: true, msg: "history not found"})

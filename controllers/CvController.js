@@ -27,6 +27,7 @@ const uploadImage = async (req, res) => {
              error: true,
              msg: err.message
          })
+    
      }
      else{
         try {
@@ -41,10 +42,11 @@ const uploadImage = async (req, res) => {
                 }
               })
             }
-            await cv.findOneAndUpdate({user: req.user._id}, {cvProfileImage: `/uploads/images/${req.fileName}`})
-            res.json({status: true, msg: "image uploaded successfuly"}) 
+            await cv.findOneAndUpdate({user: req.user._id}, {cvProfileImage: `/uploads/images/${req.fileName}`}, {useFindAndModify: false})
+           return res.json({status: true, msg: "image uploaded successfuly"}) 
         } catch (error) {
-            res.status(500).json({error: true, msg: error.message})
+            return res.status(500).json({error: true, msg: error.message})
+            
         }
      }
   });

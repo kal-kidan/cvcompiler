@@ -112,6 +112,7 @@ const updateRecommendation = async (req, res,doc,rc)=>{
 
 
 const getUserCv = async (req, res) => {
+    try {
     const { _id } = req.params
     const userCv =  await cv.findOne({ _id }).populate('user').select('_id status adminId user createdAt updatedAt')
     if (!userCv) {
@@ -124,6 +125,9 @@ const getUserCv = async (req, res) => {
     return res.json({
       userCv
     })
+    } catch (error) {
+        return res.json({error: true, msg: error.message})
+    }
   
   };
 
@@ -211,7 +215,7 @@ const getUserCv = async (req, res) => {
                 html: `
                 <html>
                 <h3> Hi ${User.firstName} Your cv is ready. </h3> 
-                <a href = ${process.env.FORGOT_PASSWORD_KEY}> click here </a> to see your cv. 
+                <a href = ${process.env.URL_FRONT}> click here </a> to see your cv. 
                 </html>
                 `
             }

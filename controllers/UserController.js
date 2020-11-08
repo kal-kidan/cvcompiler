@@ -213,7 +213,8 @@ const updateEditedSection  = async (req, res, doc,cvSection) =>{
       {user:userId, _id:cvId},
       {
         $addToSet: {uploadedSection: editedSection} 
-      }
+      },
+      {useFindAndModify: false}
       )
    } catch (error) {
        throw error
@@ -238,7 +239,8 @@ const updateRecommendation = async (req, res)=>{
               {user:userId,_id:cvId},
               {
                  $addToSet: {editedSections: editedSection} 
-              }
+              },
+              {useFindAndModify: false}
               )
               
          if(updatedSection.nModified !== 1){

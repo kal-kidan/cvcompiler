@@ -152,6 +152,7 @@ const forgotPassword = async (req, res)=>{
 }
 
 const resetPassword = async (req, res)=>{
+  try {
     if(!req.body){
         return res.status(400).json({error: true,status:false, msg: "enter password" })
     }
@@ -172,7 +173,10 @@ const resetPassword = async (req, res)=>{
     }
     else{
         return res.status(404).json({error: true, status: false,msg: "we couldn't reset your password" })
-    }
+    } 
+  } catch (error) {
+    return res.status(404).json({error: true, status: false,msg: error.message })
+  }
   
 }
 
