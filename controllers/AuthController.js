@@ -121,7 +121,7 @@ const forgotPassword = async (req, res)=>{
     let link =`${process.env.URL_FRONT}/auth/forgot-password/${emailToken}`
     let message = `<html> 
        <p> 
-       Hi ${User.firstName}, To finish setting up your password, we just need to make sure this email address is yours.
+       Hi ${checkUser.firstName}, To finish setting up your password, we just need to make sure this email address is yours.
        Please click <a href="${link}"> here </a> to change your passord.
        </p>
     </html>`
